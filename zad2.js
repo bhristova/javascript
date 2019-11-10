@@ -1,0 +1,1 @@
+a.slice(0,(a.findIndex(a = aj) == -1  a.length  a.findIndex(a = aj))).reduce((sum, el) = {return el = j  (sum + el)  sum;}, 0);
