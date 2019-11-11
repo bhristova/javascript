@@ -1,1 +1,6 @@
-a.slice(0,(a.findIndex(a = aj) == -1  a.length  a.findIndex(a = aj))).reduce((sum, el) = {return el = j  (sum + el)  sum;}, 0);
+function jumpingJimmy(tower, jumpHeight) {
+    return tower.slice(0,(tower
+                   .findIndex(a => a>jumpHeight) == -1 ? tower.length : tower.findIndex(a => a>jumpHeight)))
+        .reduce((sum, el) => {return el <= jumpHeight ? (sum + el) : sum;}, 0)
+
+}
