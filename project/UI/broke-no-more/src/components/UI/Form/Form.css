@@ -1,0 +1,27 @@
+.Form {
+    display: flex;
+    justify-content: space-between;
+    flex-flow: column;
+}
+
+.Form .Buttons {
+    flex-flow: row;
+}
+
+.Form .Heading{
+    background-color: #0b5563;
+    width: 100%;
+    height: 40px;
+    color: white;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.Form .Heading p {
+    margin: 0px;
+    padding: 10px;
+}
+
+.Form .Field {
+    margin: 10px 10px;
+}

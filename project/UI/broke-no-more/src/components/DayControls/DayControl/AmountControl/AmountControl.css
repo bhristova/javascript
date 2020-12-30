@@ -1,0 +1,47 @@
+.AmountControl {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 0;
+    background-color: white;
+    width: 95%;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 1px #ccc;
+    min-height: 38px;
+}
+
+.AmountControl .Plus {
+    background-color: #45bc92;
+    width: 35px;
+    height: 35px;
+    border-radius: 5px;
+}
+
+.AmountControl .Minus {
+    background-color: #ff9f1c;
+    width: 35px;
+    height: 35px;
+    border-radius: 5px;
+}
+
+.AmountControl .Subject {
+    font-size: 13px;
+    max-width: 75%;
+}
+
+.AmountControl .Amount {
+    background-color: #f9f9f9;
+    width: 10%;
+    height: 30px;
+    border-radius: 5px;
+    box-shadow: 0 2px 1px #ccc;
+    text-align: center;
+    font-size: 13px;
+}
+
+.AmountControl .Amount p {
+    margin: 7px
+}
+
+/*https://coolors.co/c5d86d-261c15-f7f7f2-e4e6c3-f05d23*/
