@@ -1,3 +1,8 @@
+.Icons {
+    display: inline-block;
+
+}
+
 .Icons img {
     box-shadow: 0 2px 1px #ccc;
     border-radius: 5px;

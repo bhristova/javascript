@@ -1,0 +1,21 @@
+.Dropdown {
+    position: absolute;
+    right: 25%;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 1px #ccc;
+    font-size: 12px;
+    border-radius: 3px;
+    display: grid;
+}
+
+.Button {
+    margin: 10px 5px 5px 5px;
+    border: none;
+    outline: none;
+}
+
+.Button:enabled:hover {
+    background-color: #0b5563;
+    color: white;
+    cursor: pointer;
+}

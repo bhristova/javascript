@@ -24,6 +24,10 @@ const dayControls = (props) => {
             { date: '30 December 2020', key: "rtyukyh", icon: 0, subject: "bought flower", amount: 25.22 },
             { date: '30 December 2020', key: "dfgdghj", icon: 0, subject: "charity", amount: 25 },
             { date: '30 December 2020', key: "dsfdfsg", icon: 1, subject: "What else can I say? Today was a good day! Yes, yes, it was! hehe... Went to the bar and had a martini; afterwards decided to go home, but stopped at the market, where I saw Baileys was on sale, so how could I miss such an opportunity?", amount: 68 }
+        ],
+        [
+            { date: '31 December 2020', key: "dgfdfsg", icon: 1, subject: "Yes, yes, it was! hehe... Went to the bar and had a martini; afterwards decided to go home, but stopped at the market, where I saw Baileys was on sale, so how could I miss such an opportunity?", amount: 68 }
+            // {date: '31 December 2020', key: 'adfdsf'}
         ]
     ];
     let iter = 0;
