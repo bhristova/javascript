@@ -7,8 +7,6 @@ import classes from './Modal.css';
 
 class Modal extends Component {
     shouldComponentUpdate(nextProps, nextState) {
-        console.log("Modal update");
-        // console.log("old: " +  this.props.show + "  new: " + nextProps.show);
         return nextProps.show !== this.props.show;
     }
 

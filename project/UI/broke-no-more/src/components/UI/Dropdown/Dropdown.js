@@ -6,7 +6,7 @@ const dropdown = (props) => {
     
     return <div className={classes.Dropdown}>
         {props.buttons.map(button => {
-            if(button.type = 'button') {
+            if(button.type === 'button') {
                 return (<button className={classes.Button} 
                                 key={button.id}
                                 onClick={button.handler}
@@ -14,7 +14,7 @@ const dropdown = (props) => {
                                     {button.label}
                         </button>);
             } else { //text
-                return <p>{button.label}</p>
+                return <p className={classes.Label} key={button.id}>{button.label}</p>
             }
         }
         )}

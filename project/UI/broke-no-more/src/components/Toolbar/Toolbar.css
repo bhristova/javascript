@@ -1,0 +1,19 @@
+.Toolbar {
+    position: fixed;
+    top: 0;
+    width:100%;
+    height: 10%;
+    background-color: #0b5563;
+    display: flex;
+    justify-content: space-between;
+    z-index: 50;
+}
+
+.Logo {
+    height: 100%;
+}
+
+.Buttons {
+    right: 0;
+    top: 0;
+}

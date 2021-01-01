@@ -17,7 +17,7 @@ class DayControl extends Component {
         const parsedDate = new Date(date);
         return currentDate.getDate() === parsedDate.getDate()
             && currentDate.getMonth() === parsedDate.getMonth()
-            && currentDate.getUTCFullYear() === parsedDate.getUTCFullYear();
+            && currentDate.getFullYear() === parsedDate.getFullYear();
     }
     
     getProperDate = (date) => {

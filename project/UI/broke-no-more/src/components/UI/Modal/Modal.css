@@ -2,13 +2,13 @@
     position: fixed;
     z-index: 500;
     background-color: white;
-    width: 40%;
+    width: 600px;
     /* border: 1px solid #ccc; */
     box-shadow: 1px 1px 1px black;
-    left: 15%;
+    left: 38%;
     top: 30%;
     box-sizing: border-box;
     border-radius: 5px;
-    margin: 0px 15%;
-    min-height: 200px;
+    /* margin: 0px 15%; */
+    min-height: 150px;
 }

@@ -1,7 +1,56 @@
 .Label {
     margin: 0px 10px;
+    width: 11%;
 }
 
 .Input {
-    width: 75%;
+    width: 80%;
+}
+
+.Text {
+    width: 91%;
+    text-align: center;
+}
+
+.Multifield {
+    background-color: #f9f9f9;
+    width: 100%;
+    box-shadow: 0px 0px 5px gray;
+    border-radius: 3px;
+    margin: 0 10px 0 10px;
+    overflow-y: scroll;
+    height: 100px;
+}
+
+.Multifield .Field {
+    display: flex;
+    height: 30px;
+    margin: 5px;
+}
+
+.Multifield .Field .FieldLabel {
+    width: 20%;
+    margin: 3px 3px 7px 5px;
+}
+
+.Multifield .Field .FieldInput {
+    left: 50%;
+    position: relative;
+    height: 60%;
+}
+
+.Multifield .Field .FieldButton {
+    background-color: white;
+    color: #0b5563;
+    font-size: 15px;
+}
+
+.Multifield .Field .FieldButton:hover {
+    background-color: #0b5563;
+    color: white;
+}
+
+.Calculated {
+    position: fixed;
+    right: 4%;
 }

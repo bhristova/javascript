@@ -6,16 +6,29 @@
     font-size: 12px;
     border-radius: 3px;
     display: grid;
+    justify-items: center;
+    transform: translateX(-50%);
+    right: -412%;
+    opacity: 1;
 }
 
 .Button {
-    margin: 10px 5px 5px 5px;
+    margin: 5px 5px 5px 5px;
     border: none;
     outline: none;
+    background-color: #f9f9f9;
+    width: 60px;
+    border: 1px solid white;
 }
 
 .Button:enabled:hover {
     background-color: #0b5563;
     color: white;
     cursor: pointer;
+}
+
+.Label {
+    margin: 5px 5px 5px 5px;
+    text-align: center;
+    background-color: white;
 }

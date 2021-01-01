@@ -5,7 +5,8 @@
 }
 
 .Form .Buttons {
-    flex-flow: row;
+    justify-content: space-evenly;
+    display: flex;
 }
 
 .Form .Heading{
@@ -24,4 +25,5 @@
 
 .Form .Field {
     margin: 10px 10px;
+    display: flex;
 }
