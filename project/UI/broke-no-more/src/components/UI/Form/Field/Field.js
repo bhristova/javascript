@@ -32,7 +32,7 @@ const field = (props) => {
                     disabled={props.properties.disabled}
                     pattern={getValidator(props.properties.validation)}
                     defaultValue={props.value || null}
-                    onInput={props.properties.handlerInput ? (evt) => props.properties.handlerInput(Number.parseInt(evt.target.value)) : null}>
+                    onInput={props.properties.handlerInput ? (evt) => props.properties.handlerInput(evt.target.value) : null}>
                 </input>
             </Aux>;
         case 'select':
@@ -49,7 +49,8 @@ const field = (props) => {
                     required={props.properties.required}
                     placeholder={props.properties.placeholder}
                     disabled={props.properties.disabled}
-                    defaultValue={props.value || null}>
+                    defaultValue={props.value || null}
+                    onInput={props.properties.handlerInput ? (evt) => props.properties.handlerInput(evt.target.value) : null}>
                     {Object.keys(props.properties.availableValues)
                         .map(key =>
                             <option value={key} key={key}>
@@ -71,7 +72,8 @@ const field = (props) => {
                             <input className={classes.FieldInput}
                                 type='number'
                                 onFocus={(evt) => props.properties.enterInputHandler(Number.parseFloat(evt.target.value))}
-                                onBlur={(evt) => props.properties.leaveInputHandler(Number.parseFloat(evt.target.value))}>
+                                onBlur={(evt) => props.properties.leaveInputHandler(Number.parseFloat(evt.target.value))}
+                                onInput={props.properties.handlerInput ? (evt) => props.properties.handlerInput(evt.target.value) : null}>
                             </input>
                         </div>
                     } else if (field.type === 'button') {

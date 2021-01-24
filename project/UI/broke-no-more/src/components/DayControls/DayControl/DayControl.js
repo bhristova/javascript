@@ -7,14 +7,14 @@ import classes from './DayControl.css';
 
 class DayControl extends Component {
     
-
     shouldComponentUpdate(nextProps, nextState) {
-        return nextProps.elem !== this.props.elem;
+        return nextProps.dayData !== this.props.dayData;
     }
 
     isToday = (date) => {
-        const currentDate = new Date();
         const parsedDate = new Date(date);
+        const currentDate = new Date();
+
         return currentDate.getDate() === parsedDate.getDate()
             && currentDate.getMonth() === parsedDate.getMonth()
             && currentDate.getFullYear() === parsedDate.getFullYear();
@@ -24,7 +24,8 @@ class DayControl extends Component {
         if (this.isToday(date)) {
             return 'Today';
         }
-        return date;
+
+        return new Intl.DateTimeFormat('en', {year: 'numeric', month: 'long', day: '2-digit'}).format(new Date(date));
     }
 
     render() {
@@ -36,11 +37,14 @@ class DayControl extends Component {
             <div className={classes.DayControl}>
                 <p className={classes.Date}>{this.getProperDate(date)}</p>
                 {logsCount ? this.props.dayData.map(elem => (<AmountControl
-                    key={elem.key}
+                    key={elem.id}
+                    id={elem.id}
                     icon={elem.icon}
                     subject={elem.subject}
                     amount={elem.amount}
                     isToday={isToday}
+                    deleteClicked={() => this.props.deleteClicked(elem.id, date)}
+                    editClicked={(fields) => this.props.editClicked(elem.id, date, fields)}
                 ></AmountControl>)) : null}
                 {isToday ? <Button buttonHandler={this.props.addButtonHandler} label='Add' /> : null}
             </div>

@@ -1,44 +1,74 @@
-import React from 'react';
+import React, { Component } from 'react';
 
 import DayControl from './DayControl/DayControl'
+import {getAmountLogs, deleteAmountLog, updateAmountLog} from '../../api/AmountLog';
 
-const dayControls = (props) => {
-    const data = [
-        [
-            { date: '27 December 2020', key: "afkhwsg", icon: 'minus', subject: "bought apples", amount: 234435.34, category: 'food'},
-            { date: '27 December 2020', key: "asddsfa", icon: 'plus', subject: "found 5 leva", amount: 5, category: 'etc' },
-            { date: '27 December 2020', key: "adflkel", icon: 'minus', subject: "bought dog food", amount: 12.99, category: 'food' }
-        ],
-        [
-            { date: '28 December 2020', key: "afkhwsg", icon: 'plus', subject: "bought apples", amount: 234435.34 , category: 'food'},
-            { date: '28 December 2020', key: "asddsfa", icon: 'plus', subject: "found 5 leva", amount: 5, category: 'food' },
-            { date: '28 December 2020', key: "adflkel", icon: 'minus', subject: "bought dog food", amount: 12.99, category: 'food' }
-        ],
-        [
-            { date: '29 December 2020', key: "afkhwsg", icon: 'minus', subject: "bought apples", amount: 234435.34, category: 'food' },
-            { date: '29 December 2020', key: "asddsfa", icon: 'plus', subject: "found 5 leva", amount: 5, category: 'food' },
-            { date: '29 December 2020', key: "adflkel", icon: 'minus', subject: "bought dog food", amount: 12.99, category: 'food' }
-        ],
-        [
-            { date: '30 December 2020', key: "sdgehrj", icon: 'minus', subject: "lost 5 leva", amount: 5, category: 'food' },
-            { date: '30 December 2020', key: "rtyukyh", icon: 'minus', subject: "bought flower", amount: 25.22 , category: 'food'},
-            { date: '30 December 2020', key: "dfgdghj", icon: 'minus', subject: "charity", amount: 25, category: 'food' },
-            { date: '30 December 2020', key: "dsfdfsg", icon: 'plus', subject: "What else can I say? Today was a good day! Yes, yes, it was! hehe... Went to the bar and had a martini; afterwards decided to go home, but stopped at the market, where I saw Baileys was on sale, so how could I miss such an opportunity?", amount: 68 }
-        ],
-        [
-            { date: '31 December 2020', key: "dgfdfsg", icon: 'plus', subject: "Yes, yes, it was! hehe... Went to the bar and had a martini; afterwards decided to go home, but stopped at the market, where I saw Baileys was on sale, so how could I miss such an opportunity?", amount: 68 }
-        ],
-        [
-            { date: '2 January 2021', key: "dgfdfsg", icon: 'plus', subject: "Yes, yes, it was! hehe... Went to the bar and had a martini; afterwards decided to go home, but stopped at the market, where I saw Baileys was on sale, so how could I miss such an opportunity?", amount: 68 }
-            ,{ date: '2 January 2021', key: "afkhwsg", icon: 'plus', subject: "bought apples", amount: 234435.34 , category: 'food'},
-            { date: '2 January 2021', key: "asddsfa", icon: 'plus', subject: "found 5 leva", amount: 5, category: 'food' },
-            { date: '2 January 2021', key: "adflkel", icon: 'minus', subject: "bought dog food", amount: 12.99, category: 'food' }
-        ]
-    ];
-    let iter = 0;
+class DayControls extends Component {
+    state = {
+        data: []
+    }
 
-    return (
-        data.map(elem => <DayControl key={iter++} dayData={elem} addButtonHandler={props.addButtonHandler}/>)
-    );
-};
-export default dayControls;
+    // shouldComponentUpdate(nextProps, nextState) {
+    //     return nextState != this.state;
+    // }
+
+    async componentDidMount() {
+        const data = await getAmountLogs();
+        this.setState({data: this.filterByDay(data)})
+    }
+
+    filterByDay(data) {
+        const dates = [...new Set(data.map(elem => elem.date))];
+        return dates.map(date => data.filter(elem => elem.date === date));
+    }
+
+    deleteClicked = async (id, date) => {
+        try {
+            await deleteAmountLog(id);
+
+            const newData = [...this.state.data];
+            const index = newData.findIndex(elem => elem[0].date === date);
+            const data = newData.find(elem => elem[0].date === date).filter(elem => elem.id !== id);
+            newData[index] = data;
+
+            this.setState({data: newData});
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    editClicked = async (id, date, fields) => {
+        try {
+            await updateAmountLog(fields, id);
+
+            const newData = [...this.state.data];
+            const dateIndex = newData.findIndex(elem => elem[0].date === date)
+            const dateArray = newData[dateIndex];
+
+            const elementIndex = dateArray.findIndex(elem => elem.id === id);
+            const newElement = dateArray[elementIndex];
+
+            Object.keys(fields).forEach(key => newElement[key] = fields[key]);
+
+            newData[dateIndex][elementIndex] = newElement;
+
+            this.setState({data: newData});
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    render () {
+        return (
+            this.state.data.map(elem =>
+                <DayControl
+                    key={elem[0].date}
+                    dayData={elem}
+                    addButtonHandler={this.props.addButtonHandler}
+                    deleteClicked={(id, date) => this.deleteClicked(id, date)}
+                    editClicked={(id, date, fields) => this.editClicked(id, date, fields)}/>)
+        );
+    }
+}
+
+export default DayControls;

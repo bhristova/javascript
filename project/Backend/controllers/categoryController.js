@@ -1,15 +1,14 @@
 const query = require('../db/query');
 const queryFactory = require('../db/queryFactory');
 
-amountLogController = () => {
-  const tableName = 'amountLog';
+categoryController = () => {
+  const tableName = 'L_category';
   const queriesInstance = query();
   const queryFactoryInstance = queryFactory(tableName);
 
   return {
     getAll: (req, res, next) => {
-        const options = req.body.options || {top: 20, orderBy: 'date', ordering: 'asc'};
-        const query = queryFactoryInstance.queryGetAll(req, options);
+        const query = queryFactoryInstance.queryGetAll(req);
         queriesInstance
           .executeQuery(query)
           .then(result => {
@@ -56,4 +55,4 @@ amountLogController = () => {
   }
 }
 
-module.exports = amountLogController;
+module.exports = categoryController;

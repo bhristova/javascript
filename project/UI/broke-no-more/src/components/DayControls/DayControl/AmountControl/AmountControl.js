@@ -6,13 +6,14 @@ import HoverButton from '../../../UI/HoverButton/HoverButton';
 import Dropdown from '../../../UI/Dropdown/Dropdown';
 import EditForm from './EditForm/EditForm';
 import DeleteForm from './DeleteForm/DeleteForm';
+import {updateAmountLog} from '../../../../api/AmountLog';
 
 class AmountControl extends Component {
     state = {
         hovered: false,
         clicked: false,
         editFormShow: false,
-        deleteFormShow: false
+        deleteFormShow: false,
     }
 
     componentDidUpdate = (previousValue, prevState) => {
@@ -20,7 +21,7 @@ class AmountControl extends Component {
     } 
 
     // shouldComponentUpdate = (nextProps, nextState) => {
-    //     return this.state != nextState;
+    //     return this.props.updated != nextProps.updated;
     //     // return this.props.editFormShow != nextProps.editFormShow || this.props.deleteFormShow != nextProps.deleteFormShow;
     // }
 
@@ -71,12 +72,12 @@ class AmountControl extends Component {
                     </HoverButton>}
                 <EditForm editFormShow={this.state.editFormShow}
                     cancelClicked={() => { this.setState({ editFormShow: false }) }}
-                    addClicked={() => console.log('Add clicked!')}
+                    addClicked={(fields) => { this.props.editClicked(fields); this.setState({ editFormShow: false }); }}
                     values={this.props}
                 />
                 <DeleteForm deleteFormShow={this.state.deleteFormShow}
                     cancelClicked={() => { this.setState({ deleteFormShow: false }) }}
-                    deleteClicked={() => console.log('Delete clicked!')}
+                    deleteClicked={() => { this.props.deleteClicked(); this.setState({ deleteFormShow: false }); }}
                 />
             </div>;
     }
