@@ -19,7 +19,7 @@ db.connect().then(() => {
   app.listen(3001, function() {
     console.log('listening on 3001')
   });
-});
+}).catch(err => console.error(err));
 
 
 routers.setRouting(app);

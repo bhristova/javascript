@@ -17,11 +17,18 @@ class AmountControl extends Component {
     }
 
     componentDidUpdate = (previousValue, prevState) => {
+        if(this.props !== previousValue) {
+            console.log('Changed!')
+        }
         console.log('Amount summary DID update')
     } 
 
     // shouldComponentUpdate = (nextProps, nextState) => {
-    //     return this.props.updated != nextProps.updated;
+    //     return this.props != nextProps || this.state != nextState;
+    //     // if(this.state.editFormShow !== nextState.editFormShow) {
+    //     //     console.log('changed!');
+    //     // }
+    //     // return this.state !== nextState;
     //     // return this.props.editFormShow != nextProps.editFormShow || this.props.deleteFormShow != nextProps.deleteFormShow;
     // }
 

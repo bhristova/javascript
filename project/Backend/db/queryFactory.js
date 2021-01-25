@@ -36,25 +36,31 @@ const getFieldFormatting = (field) => {
     return field;
 }
 
-const parseInsert = (body) => {
-    let result = '';
+const parseInsert = (body, tableName) => {
+    let queryInsert = `INSERT INTO ${tableName}`;
+    let resultValues = '';
+    let resultColumns = '';
     if(!Array.isArray(body)) {
         body = [body];
     }
 
+    //TODO: body should only have one element... fix this pls
     for(let i = 0; i< body.length; i++) {
         const value = body[i];
-        result = `${result} (`;
+        resultValues = `${resultValues} (`;
+        resultColumns = `${resultColumns} (`;
 
         const valuesArray = Object.keys(value);
         valuesArray.forEach((key, index) => {
-            result = `${result} ${getFieldFormatting(value[key])} ${index < valuesArray.length - 1 ? ',' : ''}`;
+            resultValues = `${resultValues} ${getFieldFormatting(value[key])} ${index < valuesArray.length - 1 ? ',' : ''}`;
+            resultColumns = `${resultColumns} ${key} ${index < valuesArray.length - 1 ? ',' : ''}`;
         });
 
-        result = `${result})${i < body.length - 1 ? ', ': ''}`;
+        resultValues = `${resultValues})${i < body.length - 1 ? ', ': ''}`;
+        resultColumns = `${resultColumns})`;
     }
 
-    return result;
+    return `${queryInsert} ${resultColumns} VALUES ${resultValues}`;
 }
 
 const parseUpdate = (body) => {
@@ -73,13 +79,27 @@ const parseOptions = (options) => {
         return;
     }
 
-    let query = '';
-    if (options.orderBy) {
-        query = `ORDER BY ${options.orderBy} ${options.ordering || 'desc'}`;
+    // let query = '';
+    // if (options.lastDate) {
+    //     const date = new Date(options.lastDate);
+    //     date.setDate(date.getDate() - 1);
+    //     const dateString = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+    //     query = `${query} WHERE date = date('${dateString}')`
+    // } else {
+    //     query = `${query} WHERE date = (SELECT MAX(date) from amountlog)`
+    // }
+    let date = {};
+    if(options.lastDate) {
+        date = new Date(options.lastDate);
+    } else {
+        date = new Date();
+        date.setDate(date.getDate() + 1);
     }
-    if (options.top) {
-        query = `${query} LIMIT ${options.top}`
-    }
+    const dateString = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
+
+    const query = `(SELECT * FROM amountLog where date < date('${dateString}') ORDER BY date desc LIMIT ${options.top})\
+        union\
+        (SELECT * FROM amountLog WHERE date = (SELECT MIN(dt) FROM (SELECT date as dt FROM amountLog where date < date('${dateString}') ORDER BY date desc LIMIT ${options.top}) as dates) ORDER BY date desc)`
 
     return query;
 }
@@ -87,12 +107,12 @@ const parseOptions = (options) => {
 const queryFactory = (tableName) => {
     return {
         queryGetAll: (request, options) => {
-            let query = `SELECT * FROM ${tableName}`;
+            let query = '';//`SELECT * FROM ${tableName}`;
 
-            if(request.body.filter) {
-                const queryFilter = parseFilter(request.body.filter);
-                query = `${query} ${queryFilter}`;
-            }
+            // if(request.body.filter) {
+            //     const queryFilter = parseFilter(request.body.filter);
+            //     query = `${query} ${queryFilter}`;
+            // }
 
             if(options) {
                 const queryOptions = parseOptions(options);
@@ -116,8 +136,7 @@ const queryFactory = (tableName) => {
         queryCreate: (request) => {
             const body = request.body;
 
-            const values = parseInsert(body);
-            let query = `INSERT INTO ${tableName} VALUES ${values}`;
+            const query = parseInsert(body, tableName);
 
             return query;
         },

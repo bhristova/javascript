@@ -10,6 +10,10 @@ const setRoutes = (router, name, controller) => {
     .get(controller.getAll)
     .post(controller.create);
 
+  router.route(`/${name}/*`)
+    .get(controller.getAll)
+    .post(controller.create);
+
   router.route(`/${name}/:id`)
     .get(controller.getById)
     .put(controller.update)

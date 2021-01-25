@@ -1,8 +1,9 @@
 const apiUrl = 'http://localhost:3001';
 
-const getAmountLogs = () => {
+const getAmountLogs = (lastDate) => {
+    const lastDateString = lastDate ? `/lastDate=${lastDate}` : '';
     return new Promise((resolve, reject) => {
-        fetch(apiUrl + '/api/amountLog', {
+        fetch(`${apiUrl}/api/amountLog${lastDateString}`, {
             method: 'GET',
             mode: 'cors',
             headers: {
@@ -15,7 +16,7 @@ const getAmountLogs = () => {
 
 const deleteAmountLog = (id) => {
     return new Promise((resolve, reject) => {
-        fetch(apiUrl + `/api/amountLog/${id}`, {
+        fetch(`${apiUrl}/api/amountLog/${id}`, {
             method: 'DELETE',
             mode: 'cors',
             headers: {
@@ -27,9 +28,8 @@ const deleteAmountLog = (id) => {
 };
 
 const updateAmountLog = (body, id) => {
-    //parse body
     return new Promise((resolve, reject) => {
-        fetch(apiUrl + `/api/amountLog/${id}`, {
+        fetch(`${apiUrl}/api/amountLog/${id}`, {
             method: 'PUT',
             body: JSON.stringify(body),
             headers: {
@@ -41,4 +41,18 @@ const updateAmountLog = (body, id) => {
     });   
 };
 
-export {getAmountLogs, deleteAmountLog, updateAmountLog};
+const createAmountLog = (body) => {
+    return new Promise((resolve, reject) => {
+        fetch(`${apiUrl}/api/amountLog`, {
+            method: 'POST',
+            body: JSON.stringify(body),
+            headers: {
+                'Access-Control-Allow-Origin' : '*',
+                'Content-Type': 'application/json'
+            }
+        }).then(response => resolve(response.json()))
+        .catch(err => reject(err));
+    });  
+}
+
+export {getAmountLogs, deleteAmountLog, updateAmountLog, createAmountLog};

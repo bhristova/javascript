@@ -2,13 +2,22 @@ import React, { Component } from 'react';
 
 import AmountControl from './AmountControl/AmountControl';
 import Button from '../../UI/Button/Button';
+import { updateAmountLog} from '../../../api/AmountLog';
 
 import classes from './DayControl.css';
 
 class DayControl extends Component {
     
+    state = {
+        data: []
+    }
+
+    componentDidMount() {
+        this.setState({data: this.props.dayData});
+    }
+
     shouldComponentUpdate(nextProps, nextState) {
-        return nextProps.dayData !== this.props.dayData;
+        return this.state.data !== nextState.data || nextProps.dayData !== this.props.dayData;
     }
 
     isToday = (date) => {
@@ -27,6 +36,26 @@ class DayControl extends Component {
 
         return new Intl.DateTimeFormat('en', {year: 'numeric', month: 'long', day: '2-digit'}).format(new Date(date));
     }
+    
+    editClicked = async (id, date, fields) => {
+        try {
+            await updateAmountLog(fields, id);
+
+            this.setState(state => {
+                const newData = [...state.data];
+                const elementIndex = newData.findIndex(elem => elem.id === id);
+                const newElement = newData[elementIndex];
+
+                Object.keys(fields).forEach(key => newElement[key] = fields[key]);
+
+                newData[elementIndex] = newElement;
+
+                return {data:newData};
+              });
+        } catch (err) {
+            console.error(err);
+        }
+    }
 
     render() {
         const date = this.props.dayData[0].date;
@@ -44,7 +73,7 @@ class DayControl extends Component {
                     amount={elem.amount}
                     isToday={isToday}
                     deleteClicked={() => this.props.deleteClicked(elem.id, date)}
-                    editClicked={(fields) => this.props.editClicked(elem.id, date, fields)}
+                    editClicked={(fields) => this.editClicked(elem.id, date, fields)}
                 ></AmountControl>)) : null}
                 {isToday ? <Button buttonHandler={this.props.addButtonHandler} label='Add' /> : null}
             </div>
