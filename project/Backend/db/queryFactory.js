@@ -114,9 +114,13 @@ const queryFactory = (tableName) => {
             //     query = `${query} ${queryFilter}`;
             // }
 
-            if(options) {
-                const queryOptions = parseOptions(options);
-                query = `${query} ${queryOptions}`;
+            if(tableName === "amountLog") {
+                if(options) {
+                    const queryOptions = parseOptions(options);
+                    query = `${query} ${queryOptions}`;
+                }
+            } else {
+                query = `SELECT * FROM ${tableName}`
             }
 
             return query;

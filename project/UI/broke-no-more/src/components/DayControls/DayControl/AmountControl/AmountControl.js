@@ -77,15 +77,15 @@ class AmountControl extends Component {
                     <HoverButton hoverButtonHandler={this.hoverButtonHandler} hoveredButton={true}>
                         {this.state.clicked && <Dropdown buttons={buttons} /> }
                     </HoverButton>}
-                <EditForm editFormShow={this.state.editFormShow}
+                {this.state.editFormShow && <EditForm editFormShow={this.state.editFormShow}
                     cancelClicked={() => { this.setState({ editFormShow: false }) }}
                     addClicked={(fields) => { this.props.editClicked(fields); this.setState({ editFormShow: false }); }}
                     values={this.props}
-                />
-                <DeleteForm deleteFormShow={this.state.deleteFormShow}
+                />}
+                {this.state.deleteFormShow && <DeleteForm deleteFormShow={this.state.deleteFormShow}
                     cancelClicked={() => { this.setState({ deleteFormShow: false }) }}
                     deleteClicked={() => { this.props.deleteClicked(); this.setState({ deleteFormShow: false }); }}
-                />
+                />}
             </div>;
     }
 }

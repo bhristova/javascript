@@ -12,8 +12,10 @@ categoryController = () => {
         queriesInstance
           .executeQuery(query)
           .then(result => {
-            res.send(result);
+            res.status(200).send(result);
             next();
+        }).catch(err => {
+          res.status(500).send(err);
         });
     },
     getById: (req, res, next) => {
@@ -21,8 +23,10 @@ categoryController = () => {
         queriesInstance
           .executeQuery(query)
           .then(result => {
-            res.send(result);
+            res.status(200).send(result);
             next();
+        }).catch(err => {
+          res.status(500).send(err);
         });
     },
     create: (req, res, next) => {
@@ -30,8 +34,10 @@ categoryController = () => {
         return queriesInstance
           .executeQuery(query)
           .then(result => {
-              res.send(result);
+              res.status(200).send(result);
               next();
+          }).catch(err => {
+            res.status(500).send(err);
           });
     },
     update: (req, res, next) => {
@@ -39,8 +45,10 @@ categoryController = () => {
         return queriesInstance
           .executeQuery(query)
           .then(result => {
-              res.send(result);
+              res.status(200).send(result);
               next();
+          }).catch(err => {
+            res.status(500).send(err);
           });
     },
     delete: (req, res, next) => {
@@ -48,8 +56,10 @@ categoryController = () => {
         return queriesInstance
           .executeQuery(query)
           .then(result => {
-              res.send(result);
+              res.status(200).send(result);
               next();
+          }).catch(err => {
+            res.status(500).send(err);
           });
     }
   }

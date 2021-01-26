@@ -69,6 +69,7 @@ class DayControl extends Component {
                     key={elem.id}
                     id={elem.id}
                     icon={elem.icon}
+                    category={elem.category}
                     subject={elem.subject}
                     amount={elem.amount}
                     isToday={isToday}

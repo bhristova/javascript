@@ -20,13 +20,15 @@ amountLogController = () => {
             const dates = [...result.map(elem => elem.date)].filter((date, i, self) => 
               self.findIndex(d => d.getTime() === date.getTime()) === i
             );
-            res.send(dates.map(date => result.filter(elem => {
+            res.status(200).send(dates.map(date => result.filter(elem => {
               const filterDate = new Date(date);
               const currentDate = new Date(elem.date);
               return currentDate.getFullYear() === filterDate.getFullYear() &&
                      currentDate.getMonth()    === filterDate.getMonth() &&
                      currentDate.getDate()     === filterDate.getDate();
             })));
+        }).catch(err => {
+          res.status(500).send(err);
         });
     },
 
@@ -35,7 +37,9 @@ amountLogController = () => {
         queriesInstance
           .executeQuery(query)
           .then(result => {
-            res.send(result);
+            res.status(200).send(result);
+        }).catch(err => {
+          res.status(500).send(err);
         });
     },
 
@@ -44,7 +48,9 @@ amountLogController = () => {
         return queriesInstance
           .executeQuery(query)
           .then(result => {
-              res.send(result);
+              res.status(200).send(result);
+          }).catch(err => {
+            res.status(500).send(err);
           });
     },
 
@@ -53,7 +59,9 @@ amountLogController = () => {
         return queriesInstance
           .executeQuery(query)
           .then(result => {
-              res.send(result);
+              res.status(200).send(result);
+          }).catch(err => {
+            res.status(500).send(err);
           });
     },
     
@@ -62,7 +70,9 @@ amountLogController = () => {
         return queriesInstance
           .executeQuery(query)
           .then(result => {
-              res.send(result);
+              res.status(200).send(result);
+          }).catch(err => {
+            res.status(500).send(err);
           });
     }
   }
