@@ -12,14 +12,13 @@ class Form extends Component {
             <div className={classes.Heading}>
                 <p>{this.props.title}</p>
             </div>
-            {this.props.fields.map(field =>
-                <div className={classes.Field} key={field.id} >
+            {this.props.fields && this.props.fields.map(field =>
                     <Field
                         properties={field}
                         value={this.props.values ? this.props.values[field.propertyName] : null}
-                    >
+                        key={field.id}>
+                        {field.type === 'multifield' ? field.fields.map(f => <Field properties={f} key={f.id}></Field>) : null}
                     </Field>
-                </div>
             )}
             <div className={classes.Buttons}>
                 {this.props.buttons.map(button =>

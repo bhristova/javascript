@@ -66,7 +66,7 @@ class DayControl extends Component {
             <div className={classes.DayControl}>
                 <p className={classes.Date}>{this.getProperDate(date)}</p>
                 {logsCount ? this.props.dayData.map(elem => (<AmountControl
-                    key={elem.id}
+                    key={elem.id || elem.date}
                     id={elem.id}
                     icon={elem.icon}
                     category={elem.category}

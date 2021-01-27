@@ -1,18 +1,4 @@
 ///TODO: refactor this... it's very ugly
-const parseFilter = (filter) => {
-    let result = '';
-    if(filter.length === 0 ) {
-        return result;
-    }
-
-    for(let i = 0; i< filter.length; i++) {
-        const rule = filter[i];
-        result = `${result} ${parseRule(rule, i)}`;
-    }
-
-    return result;
-}
-
 const parseRule = (rule, index) => {
     let result = '';
 
@@ -39,26 +25,27 @@ const getFieldFormatting = (field) => {
 const parseInsert = (body, tableName) => {
     let queryInsert = `INSERT INTO ${tableName}`;
     let resultValues = '';
-    let resultColumns = '';
+    let resultColumns = '(';
     if(!Array.isArray(body)) {
         body = [body];
     }
 
-    //TODO: body should only have one element... fix this pls
-    for(let i = 0; i< body.length; i++) {
-        const value = body[i];
-        resultValues = `${resultValues} (`;
-        resultColumns = `${resultColumns} (`;
+    const columnNames = Object.keys(body[0]);
 
-        const valuesArray = Object.keys(value);
-        valuesArray.forEach((key, index) => {
-            resultValues = `${resultValues} ${getFieldFormatting(value[key])} ${index < valuesArray.length - 1 ? ',' : ''}`;
-            resultColumns = `${resultColumns} ${key} ${index < valuesArray.length - 1 ? ',' : ''}`;
+    columnNames.forEach((column, index) => {
+        resultColumns = `${resultColumns} ${column} ${index < columnNames.length - 1 ? ',' : ''}`;
+    });
+    resultColumns = `${resultColumns})`;
+
+    body.forEach((value, valuesIndex) => {
+        resultValues = `${resultValues} (`;
+
+        columnNames.forEach((column, index) => {
+            resultValues = `${resultValues} ${getFieldFormatting(value[column])} ${index < columnNames.length - 1 ? ',' : ''}`;
         });
 
-        resultValues = `${resultValues})${i < body.length - 1 ? ', ': ''}`;
-        resultColumns = `${resultColumns})`;
-    }
+        resultValues = `${resultValues})${valuesIndex < body.length - 1 ? ', ': ''}`;
+    });
 
     return `${queryInsert} ${resultColumns} VALUES ${resultValues}`;
 }
@@ -79,53 +66,59 @@ const parseOptions = (options) => {
         return;
     }
 
-    // let query = '';
-    // if (options.lastDate) {
-    //     const date = new Date(options.lastDate);
-    //     date.setDate(date.getDate() - 1);
-    //     const dateString = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
-    //     query = `${query} WHERE date = date('${dateString}')`
-    // } else {
-    //     query = `${query} WHERE date = (SELECT MAX(date) from amountlog)`
-    // }
-    let date = {};
-    if(options.lastDate) {
-        date = new Date(options.lastDate);
-    } else {
-        date = new Date();
-        date.setDate(date.getDate() + 1);
+    if(options.union) {
+        return `(${parseOptions(options.union[0])}) union (${parseOptions(options.union[1])})`
     }
-    const dateString = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`
 
-    const query = `(SELECT * FROM amountLog where date < date('${dateString}') ORDER BY date desc LIMIT ${options.top})\
-        union\
-        (SELECT * FROM amountLog WHERE date = (SELECT MIN(dt) FROM (SELECT date as dt FROM amountLog where date < date('${dateString}') ORDER BY date desc LIMIT ${options.top}) as dates) ORDER BY date desc)`
+    let query = `SELECT \
+${options.select.operation ? options.select.operation + '(' : ''}\
+${options.select.what ? options.select.what : ' * '}\
+${options.select.operation ? ')' : ''}\
+${options.select.alias ? ' as ' + options.select.alias : ''}\
+ FROM `;
+    
+    if(options.tableName) {
+        query = `${query} ${options.tableName}` ;
+    } else {
+        query = `${query} (${parseOptions(options.from)})` ;
+    }
+
+    if(options.filter) {
+        options.filter.map((rule, index) => {
+            query = `${query} ${index === 0 ? 'WHERE ' : 'AND '}`;
+            query = `${query} ${rule.column} ${rule.op}`;
+            if(typeof rule.value === 'string') {
+                query = `${query} ${rule.value}`;
+            } else {
+                query = `${query} (${parseOptions(rule.value)})`;
+            }
+
+        });
+    }
+
+    if(options.alias) {
+        query = `${query} as ${options.alias}`;
+    }
+
+    if(options.ordering) {
+        query = `${query} ORDER BY ${options.orderBy} ${options.ordering}`;
+    }
+
+    if(options.top) {
+        query = `${query} LIMIT ${options.top}`;
+    }
+
+    if(options.specialRule) {
+        query = `(${query}) ${options.specialRule}`;
+    }
 
     return query;
 }
 
 const queryFactory = (tableName) => {
     return {
-        queryGetAll: (request, options) => {
-            let query = '';//`SELECT * FROM ${tableName}`;
-
-            // if(request.body.filter) {
-            //     const queryFilter = parseFilter(request.body.filter);
-            //     query = `${query} ${queryFilter}`;
-            // }
-
-            if(tableName === "amountLog") {
-                if(options) {
-                    const queryOptions = parseOptions(options);
-                    query = `${query} ${queryOptions}`;
-                }
-            } else {
-                query = `SELECT * FROM ${tableName}`
-            }
-
-            return query;
-        },
-        queryGetById: (request) => {
+        queryGetAll: (options) => parseOptions(options),
+        queryGetById: (request, conditions) => {
             const id = {
                 column: 'id',
                 operation: '=',
@@ -134,16 +127,11 @@ const queryFactory = (tableName) => {
 
             const filterId = parseRule(id);
 
-            let query = `SELECT * FROM ${tableName} ${filterId}`;
-            return query;
-        },
-        queryCreate: (request) => {
-            const body = request.body;
-
-            const query = parseInsert(body, tableName);
+            let query = `SELECT * FROM ${tableName} ${conditions.alias || ''} ${filterId} ${conditions.exists || ''}`;
 
             return query;
         },
+        queryCreate: (data) => parseInsert(data, tableName),
         queryUpdate: (request) => {
             const id = request.params.id;
             const body = request.body
@@ -159,6 +147,13 @@ const queryFactory = (tableName) => {
             let query = `DELETE FROM ${tableName} WHERE id=${getFieldFormatting(id)}`;
 
             return query;
+        },
+        queryCreateBridge: (id1, tableName2, data2) => {
+            const id2 = `id2_${tableName2}`;
+            const data = data2.map(elem => ({id1_period: id1, [id2]: elem.id, expectedAmount: elem.value || 0}));
+            const bridgeTableName = `${tableName}_${tableName2}`;
+            
+            return parseInsert(data, bridgeTableName);
         }
     };
 }

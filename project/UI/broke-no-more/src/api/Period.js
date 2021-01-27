@@ -1,7 +1,7 @@
 const apiUrl = 'http://localhost:3001/api'; //TODO: get from config
-const entityName = 'category'
+const entityName = 'period'
 
-const getCategories = () => {
+const getPeriods = () => {
     return new Promise((resolve, reject) => {
         fetch(`${apiUrl}/${entityName}`, {
             method: 'GET',
@@ -14,7 +14,7 @@ const getCategories = () => {
     });    
 };
 
-const createCategory = (body) => {
+const createPeriod = (body) => {
     return new Promise((resolve, reject) => {
         fetch(`${apiUrl}/${entityName}`, {
             method: 'POST',
@@ -24,11 +24,11 @@ const createCategory = (body) => {
                 'Content-Type': 'application/json'
             }
         }).then(response => resolve(response.json()))
-        .catch(err => reject(err));
+        .catch(err => {console.error(err); reject(err)});
     });  
 };
 
-const deleteCategory = (id) => {
+const deletePeriod= (id) => {
     return new Promise((resolve, reject) => {
         fetch(`${apiUrl}/${entityName}/${id}`, {
             method: 'DELETE',
@@ -41,4 +41,4 @@ const deleteCategory = (id) => {
     });   
 };
 
-export {getCategories, createCategory, deleteCategory};
+export {getPeriods, createPeriod, deletePeriod};

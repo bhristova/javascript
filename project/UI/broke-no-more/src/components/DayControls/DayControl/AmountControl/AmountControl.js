@@ -6,7 +6,6 @@ import HoverButton from '../../../UI/HoverButton/HoverButton';
 import Dropdown from '../../../UI/Dropdown/Dropdown';
 import EditForm from './EditForm/EditForm';
 import DeleteForm from './DeleteForm/DeleteForm';
-import {updateAmountLog} from '../../../../api/AmountLog';
 
 class AmountControl extends Component {
     state = {

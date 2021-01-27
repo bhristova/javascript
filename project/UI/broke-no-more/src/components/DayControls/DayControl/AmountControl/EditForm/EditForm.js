@@ -35,8 +35,8 @@ class EditForm extends Component {
         return [
             { id: 'fieldEditFormType', name: 'Type', type: 'select', availableValues: { [Consts.icons.minus]: 'Expense', [Consts.icons.plus] : 'Income' }, required: true, propertyName: 'icon', handlerInput: (value) => this.addToState('icon', value) },
             { id: 'fieldEditFormCategory', name: 'Category', type: 'select', availableValues: this.state.categories, required: true, propertyName: 'category', handlerInput: (value) => this.addToState('category', value) },
-            { id: 'fieldEditFormSubject', name: 'Subject', type: 'input', inputType: 'text', min: 10, max: 200, required: true, propertyName: 'subject', handlerInput: (value) => this.addToState('subject', value) },
-            { id: 'fieldEditFormAmount', name: 'Amount', type: 'input', inputType: 'number', max: 200, validation: 'number', required: true, propertyName: 'amount', handlerInput: (value) => this.addToState('amount', value) },
+            { id: 'fieldEditFormSubject', name: 'Subject', type: 'input', inputType: 'text', minLength: 10, maxLength: 200, required: true, propertyName: 'subject', handlerInput: (value) => this.addToState('subject', value) },
+            { id: 'fieldEditFormAmount', name: 'Amount', type: 'input', inputType: 'number', maxLength: 200, validation: 'number', required: true, propertyName: 'amount', handlerInput: (value) => this.addToState('amount', value) },
         ]
     }
 

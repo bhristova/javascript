@@ -12,9 +12,24 @@
     text-align: center;
 }
 
+.Calculated {
+    position: relative;
+    margin: 10px 0 0 10px;
+}
+
+.NormalField {
+    margin: 10px 10px;
+    display: flex;
+}
+
+.DeleteButton {
+    left: 45%;
+    position: relative;
+    border-radius: 30px;
+}
+
 .Multifield {
     background-color: #f9f9f9;
-    width: 100%;
     box-shadow: 0px 0px 5px gray;
     border-radius: 3px;
     margin: 0 10px 0 10px;
@@ -33,8 +48,17 @@
     margin: 3px 3px 7px 5px;
 }
 
+.Multifield .Field .InputFieldLabel {
+    width: 20%;
+    margin: 3px 3px 7px 5px;
+    background-color: white;
+    border: 1px;
+    border-color: gray;
+    border-style: solid;
+}
+
 .Multifield .Field .FieldInput {
-    left: 50%;
+    left: 40%;
     position: relative;
     height: 60%;
 }
@@ -48,9 +72,4 @@
 .Multifield .Field .FieldButton:hover {
     background-color: #0b5563;
     color: white;
-}
-
-.Calculated {
-    position: fixed;
-    right: 4%;
 }

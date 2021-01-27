@@ -1,9 +1,10 @@
-const apiUrl = 'http://localhost:3001';
+const apiUrl = 'http://localhost:3001/api'; //TODO: get from config
+const entityName = 'amountLog';
 
-const getAmountLogs = (lastDate) => {
-    const lastDateString = lastDate ? `/lastDate=${lastDate}` : '';
+const getAmountLogs = (periodId, lastDate) => {
+    const lastDateString = lastDate ? `/lastDate=${lastDate}&periodId=${periodId}` : '';
     return new Promise((resolve, reject) => {
-        fetch(`${apiUrl}/api/amountLog${lastDateString}`, {
+        fetch(`${apiUrl}/${entityName}${lastDateString}`, {
             method: 'GET',
             mode: 'cors',
             headers: {
@@ -16,7 +17,7 @@ const getAmountLogs = (lastDate) => {
 
 const deleteAmountLog = (id) => {
     return new Promise((resolve, reject) => {
-        fetch(`${apiUrl}/api/amountLog/${id}`, {
+        fetch(`${apiUrl}/${entityName}/${id}`, {
             method: 'DELETE',
             mode: 'cors',
             headers: {
@@ -29,7 +30,7 @@ const deleteAmountLog = (id) => {
 
 const updateAmountLog = (body, id) => {
     return new Promise((resolve, reject) => {
-        fetch(`${apiUrl}/api/amountLog/${id}`, {
+        fetch(`${apiUrl}/${entityName}/${id}`, {
             method: 'PUT',
             body: JSON.stringify(body),
             headers: {
@@ -43,7 +44,7 @@ const updateAmountLog = (body, id) => {
 
 const createAmountLog = (body) => {
     return new Promise((resolve, reject) => {
-        fetch(`${apiUrl}/api/amountLog`, {
+        fetch(`${apiUrl}/${entityName}`, {
             method: 'POST',
             body: JSON.stringify(body),
             headers: {
@@ -53,6 +54,6 @@ const createAmountLog = (body) => {
         }).then(response => resolve(response.json()))
         .catch(err => reject(err));
     });  
-}
+};
 
 export {getAmountLogs, deleteAmountLog, updateAmountLog, createAmountLog};

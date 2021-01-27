@@ -4,7 +4,7 @@ import Aux from '../../../../hoc/Auxiliary';
 
 import classes from './Field.css';
 
-const typesMap = ['select', 'input', 'text', 'multifield', 'calculated'];
+const typesMap = ['select', 'input', 'text', 'multifield', 'calculated', 'button'];
 const validatorsMap = [
     { 'number': 'validateNumber' },
     { 'password': 'validatePassword' },
@@ -14,29 +14,37 @@ const validatorsMap = [
 const field = (props) => {
     switch (getType(props.properties.type)) {
         case 'input':
-            return <Aux>
-                <label className={classes.Label}
+            return <div className={props.properties.labelsClassesNames ? classes.Field : classes.NormalField} key={`multifield-${props.properties.id}`}>
+                <div contentEditable={props.properties.contenteditable} className={classes[props.properties.labelsClassesNames] || classes.Label} //TODO: react doesn't like contentEditable, fix this and pls refactor this file :)))
                     htmlFor={props.properties.id}
+                    onBlur={props.properties.handlerLabelInput ? (evt) => props.properties.handlerLabelInput(evt) : null}
                     key={`input-label-${props.properties.id}`}>
                     {props.properties.name}
-                </label>
-                <input className={classes.Input}
+                </div>
+                <input className={classes[props.properties.inputClassesNames] || classes.Input}
                     key={`input-${props.properties.id}`}
                     id={props.properties.id}
                     name={props.properties.name}
                     type={props.properties.inputType}
                     required={props.properties.required}
                     placeholder={props.properties.placeholder}
-                    maxLength={props.properties.max}
-                    minLength={props.properties.min}
+                    maxLength={props.properties.maxLength}
+                    minLength={props.properties.minLength}
                     disabled={props.properties.disabled}
                     pattern={getValidator(props.properties.validation)}
+                    min={props.properties.min}
+                    disabled={props.properties.disabled}
                     defaultValue={props.value || null}
-                    onInput={props.properties.handlerInput ? (evt) => props.properties.handlerInput(evt.target.value) : null}>
+                    // value={props.value || null}
+                    onInput={props.properties.handlerInput ? (evt) => props.properties.handlerInput(evt.target.value) : null}
+                    onFocus={props.properties.enterInputHandler ? (evt) => props.properties.enterInputHandler(Number.parseFloat(evt.target.value)) : null}
+                    onBlur={props.properties.leaveInputHandler ? (evt) => props.properties.leaveInputHandler(Number.parseFloat(evt.target.value)) : null}
+                    >
                 </input>
-            </Aux>;
+                {props.properties.deleteButton && <button onClick={props.properties.deleteButton.deleteHandler} className={classes.DeleteButton}>{props.properties.deleteButton.value}</button>}
+            </div>;
         case 'select':
-            return <Aux>
+            return <div className={ classes.NormalField}>
                 <label className={classes.Label}
                     htmlFor={props.properties.id}
                     key={`select-label-${props.properties.id}`}>
@@ -58,35 +66,23 @@ const field = (props) => {
                             </option>
                         )}
                 </select>
-            </Aux>;
+            </div>;
         case 'text':
             return <p className={classes.Text} key={`text-${props.properties.id}`}>
                 {props.properties.name}
             </p>;
         case 'multifield':
             return <div className={classes.Multifield}>
-                {props.properties.fields.map(field => {
-                    if (field.type === 'field') {
-                        return <div className={classes.Field} key={`multifield-${field.id}`}>
-                            <div className={classes.FieldLabel}>{field.fieldLabel}</div>
-                            <input className={classes.FieldInput}
-                                type='number'
-                                onFocus={(evt) => props.properties.enterInputHandler(Number.parseFloat(evt.target.value))}
-                                onBlur={(evt) => props.properties.leaveInputHandler(Number.parseFloat(evt.target.value))}
-                                onInput={props.properties.handlerInput ? (evt) => props.properties.handlerInput(evt.target.value) : null}>
-                            </input>
-                        </div>
-                    } else if (field.type === 'button') {
-                        return <div className={classes.Field} key={field.id}>
-                            <button className={classes.FieldButton}>{field.fieldLabel}</button>
-                        </div>
-                    }
-                })}
+                    {props.children}
             </div>;
         case 'calculated':
             return <div className={classes.Calculated} key={props.properties.id}>
                     {props.properties.fieldLabel}: {props.properties.value}
                 </div>;
+        case 'button':
+            return <div className={classes.Field} key={props.properties.id}>
+                        <button onClick={props.properties.handler} className={classes.FieldButton}>{props.properties.name}</button>
+                    </div>
         default:
             return null;
     }

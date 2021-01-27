@@ -1,9 +1,11 @@
 const { Router } = require('express');
 const amountLogController = require('../../controllers/amountLogController');
 const categoryController = require('../../controllers/categoryController');
+const periodController = require('../../controllers/periodController');
 
 const amountLogContorllerInstance = amountLogController();
 const categoryContorllerInstance = categoryController();
+const periodControllerInstance = periodController();
 
 const setRoutes = (router, name, controller) => {
   router.route(`/${name}`)
@@ -27,6 +29,7 @@ module.exports.setRouting = (app) => {
 
   setRoutes(router, 'amountLog', amountLogContorllerInstance);
   setRoutes(router, 'category', categoryContorllerInstance);
+  setRoutes(router, 'period', periodControllerInstance);
 
   app.use(rootPath, router);
 };

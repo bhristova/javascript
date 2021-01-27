@@ -5,6 +5,8 @@ import DayControl from './DayControl/DayControl'
 import AddForm from '../AddForm/AddForm';
 import {getAmountLogs, deleteAmountLog, createAmountLog} from '../../api/AmountLog';
 
+import NewPeriodForm from '../NewPeriodForm/NewPeriodForm';
+
 class DayControls extends Component {
     state = {
         data: [],
@@ -20,7 +22,7 @@ class DayControls extends Component {
 
     getData = async (lastDate) => {
         this.setState({loading: true});
-        const newData = await getAmountLogs(lastDate);
+        const newData = await getAmountLogs(this.props.periodId, lastDate);
         this.setState((state) => {
             return {data: [...state.data, ...newData], loading: true};
         });
@@ -28,7 +30,9 @@ class DayControls extends Component {
     }
 
     async componentDidMount() {
-        await this.getData();
+        const date = new Date();
+        date.setDate(date.getDate() + 1);
+        await this.getData(date);
 
         const options = {
             root: null,
@@ -85,6 +89,7 @@ class DayControls extends Component {
             fields.id = uuidv4();
             const date = new Date();
             fields.date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+            fields.forPeriod = this.props.periodId;
 
             await createAmountLog(fields);
 
@@ -119,7 +124,11 @@ class DayControls extends Component {
                 addClicked={(fields) => {this.addButtonClicked(fields); this.setState({addFormShow: false})}}
                 addFormShow={this.state.addFormShow}
             />
-            {/* <NewPeriodForm /> */}
+            {/* <NewPeriodForm 
+                cancelClicked={() => {this.setState({addFormShow: false})}}
+                addClicked={() => {this.setState({addFormShow: false})}}
+                newPeriodFormShow={this.state.addFormShow}
+                /> */}
             <div style={{ minHeight: "800px" }}>
                 {this.state.data.map(elem => (
                     <DayControl

@@ -36,8 +36,8 @@ class AddForm extends Component {
     getAddFormFields = () => [
         { id: 'fieldAddFormType', name: 'Type', type: 'select', availableValues: {  [Consts.icons.minus]: 'Expense', [Consts.icons.plus] : 'Income'}, required: true, handlerInput: (value) => this.addToState('icon', value)  },
         { id: 'fieldAddFormCategory', name: 'Category', type: 'select', availableValues: this.state.categories, required: true, handlerInput: (value) => this.addToState('category', value)  },
-        { id: 'fieldAddFormSubject', name: 'Subject', type: 'input', inputType: 'text', min: 10, max: 200, required: true, handlerInput: (value) => this.addToState('subject', value)  },
-        { id: 'fieldAddFormAmount', name: 'Amount', type: 'input', inputType: 'number', max: 200, validation: 'number', required: true, handlerInput: (value) => this.addToState('amount', value)  },
+        { id: 'fieldAddFormSubject', name: 'Subject', type: 'input', inputType: 'text', minLength: 10, maxLength: 200, required: true, handlerInput: (value) => this.addToState('subject', value)  },
+        { id: 'fieldAddFormAmount', name: 'Amount', type: 'input', inputType: 'number', maxLength: 200, validation: 'number', required: true, handlerInput: (value) => this.addToState('amount', value)  },
     ];
 
     getAddFormButtons = () => [
