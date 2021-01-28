@@ -10,9 +10,9 @@ categoryController = () => {
         getAll: async (req, res) => {
             try {
                 const options = {
-                    select: {
+                    select: [{
                         what: '*'
-                    },
+                    }],
                     tableName: tableName,
                     ordering: 'asc',
                     orderBy: 'name'
@@ -55,8 +55,36 @@ categoryController = () => {
         },
         delete: async (req, res) => {
             try {
-                const conditions = { alias: 'lc', exists: `AND EXISTS (SELECT 1 FROM amountLog a WHERE a.category = lc.id)` };
-                const queryExistingValues = queryFactoryInstance.queryGetById(req, conditions);
+                const options = {
+                    select: [{
+                            what: '*'
+                        }],
+                    tableName: `${tableName} as lc`,
+                    filter: [
+                        {
+                            column: 'id',
+                            op: '=',
+                            value: `'${req.params.id}'`
+                        },
+                        {
+                            exists: true,
+                            existsCondition: {
+                                select: [{
+                                        what: '1'
+                                    }],
+                                tableName: 'amountLog a',
+                                filter: [
+                                    {
+                                        column: 'a.category',
+                                        op: '=',
+                                        value: 'lc.id'
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                };
+                const queryExistingValues = queryFactoryInstance.queryGetAll(options);
                 const existingValues = await queriesInstance.executeQuery(queryExistingValues);
                 if (existingValues.length > 0) {
                     const message = `This category is being referenced and cannot be deleted!`;

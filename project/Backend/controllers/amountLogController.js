@@ -19,10 +19,10 @@ amountLogController = () => {
 		let currentDate = new Date(startDate);
 		currentDate.setDate(currentDate.getDate() - 1);
 
-		while (endDate <= currentDate) {
+		do {
 			result.push(new Date(currentDate));
 			currentDate.setDate(currentDate.getDate() - 1);
-		}
+		} while (endDate <= currentDate)
 
 		return result;
 	}
@@ -74,9 +74,9 @@ amountLogController = () => {
 				const { lastDate, periodId } = getParamsFromUrl(params);
 
 				const optionsFirst = {
-					select: {
+					select: [{
 						what: '*',
-					},
+					}],
 					tableName: tableName,
 					filter: [
 						{
@@ -95,23 +95,23 @@ amountLogController = () => {
 				};
 
 				const optionsSecond = {
-					select: {
+					select: [{
 						what: '*',
-					},
+					}],
 					tableName: tableName,
 					filter: [{
 						column: 'date',
 						op: '=',
 						value: {
-							select: {
+							select: [{
 								what: 'dt',
 								operation: 'MIN'
-							},
+							}],
 							from: {
-								select: {
+								select: [{
 									what: 'date',
 									alias: 'dt'
-								},
+								}],
 								tableName: tableName,
 								top: 15,
 								orderBy: 'date',

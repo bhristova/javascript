@@ -42,6 +42,9 @@ class AmountControl extends Component {
     }
 
     prettifyAmount = (amount) => {
+        if(!amount) {
+            return;
+        }
         let prettifiedAmount = amount.toString();
         if (prettifiedAmount.length > 6) {
             prettifiedAmount = prettifiedAmount.substring(0, 4);

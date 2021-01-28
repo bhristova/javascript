@@ -19,7 +19,7 @@ class AddForm extends Component {
         try {
             const result = await getCategories();
             const categories = result.reduce((acc, category) => {return {...acc, [category.id]: category.Name}}, {})
-            this.setState({categories: categories});
+            this.setState({categories: categories, fields: {...this.state.fields, category: result[0].id}});
             return result;
         } catch(err) {
             console.error(err);

@@ -70,12 +70,22 @@ const parseOptions = (options) => {
         return `(${parseOptions(options.union[0])}) union (${parseOptions(options.union[1])})`
     }
 
-    let query = `SELECT \
-${options.select.operation ? options.select.operation + '(' : ''}\
-${options.select.what ? options.select.what : ' * '}\
-${options.select.operation ? ')' : ''}\
-${options.select.alias ? ' as ' + options.select.alias : ''}\
- FROM `;
+    let query = 'SELECT '; 
+    if(options.select) {
+        options.select.map((select, index) => {
+            
+            query = `${query}\
+${select.operation ? select.operation + '(' : ''}\
+${select.what ? select.what : ' * '}\
+${select.operation ? ')' : ''}\
+${select.alias ? ' as ' + select.alias : ''}`
+
+            if(index < options.select.length - 1) {
+                query = `${query},  `;
+            }
+        });
+    }
+    query = `${query} FROM `;
     
     if(options.tableName) {
         query = `${query} ${options.tableName}` ;
@@ -83,17 +93,31 @@ ${options.select.alias ? ' as ' + options.select.alias : ''}\
         query = `${query} (${parseOptions(options.from)})` ;
     }
 
+    if(options.join) {
+        options.join.map(join => {
+            query = `${query} ${join.type} JOIN ${join.table} ON ${join.tableProperty} ${join.op} ${join.otherTableProperty} ` ;
+        });
+    }
+
     if(options.filter) {
         options.filter.map((rule, index) => {
             query = `${query} ${index === 0 ? 'WHERE ' : 'AND '}`;
-            query = `${query} ${rule.column} ${rule.op}`;
-            if(typeof rule.value === 'string') {
-                query = `${query} ${rule.value}`;
+            if( rule.exists ) {
+                query = `${query} EXISTS (${parseOptions(rule.existsCondition)})`;
             } else {
-                query = `${query} (${parseOptions(rule.value)})`;
+            query = `${query} ${rule.column} ${rule.op}`;
+                if(typeof rule.value === 'string') {
+                    query = `${query} ${rule.value}`;
+                } else {
+                    query = `${query} (${parseOptions(rule.value)})`;
+                }
             }
 
         });
+    }
+
+    if(options.groupBy) {
+        query = `${query} GROUP BY ${options.groupBy.join(', ')}`;
     }
 
     if(options.alias) {
@@ -118,12 +142,14 @@ ${options.select.alias ? ' as ' + options.select.alias : ''}\
 const queryFactory = (tableName) => {
     return {
         queryGetAll: (options) => parseOptions(options),
+        ///TODO: change all instance of this method below with the method from above
         queryGetById: (request, conditions) => {
             const id = {
                 column: 'id',
                 operation: '=',
                 value: request.params.id
             }
+
 
             const filterId = parseRule(id);
 

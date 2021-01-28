@@ -28,7 +28,7 @@ const createPeriod = (body) => {
     });  
 };
 
-const deletePeriod= (id) => {
+const deletePeriod = (id) => {
     return new Promise((resolve, reject) => {
         fetch(`${apiUrl}/${entityName}/${id}`, {
             method: 'DELETE',
@@ -41,4 +41,17 @@ const deletePeriod= (id) => {
     });   
 };
 
-export {getPeriods, createPeriod, deletePeriod};
+const getPeriodStatistics = (id) => {
+    return new Promise((resolve, reject) => {
+        fetch(`${apiUrl}/${entityName}/statistics/${id}`, {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Access-Control-Allow-Origin' : '*'
+            }
+        }).then(response => resolve(response.json()))
+        .catch(err => reject(err));
+    });   
+};
+
+export {getPeriods, createPeriod, deletePeriod, getPeriodStatistics};

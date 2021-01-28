@@ -4,6 +4,8 @@ import { v4 as uuidv4 } from 'uuid';
 import DayControl from './DayControl/DayControl'
 import AddForm from '../AddForm/AddForm';
 import {getAmountLogs, deleteAmountLog, createAmountLog} from '../../api/AmountLog';
+import {getPeriodStatistics} from '../../api/Period';
+import BarChart from '../UI/BarChart/BarChart';
 
 import NewPeriodForm from '../NewPeriodForm/NewPeriodForm';
 
@@ -13,7 +15,10 @@ class DayControls extends Component {
         loading: false,
         page: 0,
         prevY: 0,
-        addFormShow: false
+        addFormShow: false,
+        chartData: [],
+        amountLeft: 0,
+        amountUsed: 0
     }
 
     // shouldComponentUpdate(nextProps, nextState) {
@@ -29,10 +34,23 @@ class DayControls extends Component {
         return;
     }
 
+    getChartData = async () => {
+        try {
+            const result = await getPeriodStatistics(this.props.periodId);
+            const amountUsed = result.reduce((acc, cur) => acc + cur.actualAmount, 0)
+            const amountLeft = result.reduce((acc, cur) => acc + cur.expectedAmount, 0) - amountUsed;
+            this.setState({chartData: []});
+            this.setState({chartData: result, amountLeft: amountLeft, amountUsed: amountUsed});
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
     async componentDidMount() {
         const date = new Date();
         date.setDate(date.getDate() + 1);
         await this.getData(date);
+        await this.getChartData();
 
         const options = {
             root: null,
@@ -61,13 +79,17 @@ class DayControls extends Component {
     deleteClicked = async (id, date) => {
         try {
             await deleteAmountLog(id);
+            await this.getChartData();
 
             this.setState(state => {
                 const newData = [...state.data];
                 const index = newData.findIndex(elem => elem[0].date === date);
                 const data = newData.find(elem => elem[0].date === date).filter(elem => elem.id !== id);
-                newData[index] = data;
-    
+                if(data.length) {
+                    newData[index] = data;
+                } else {
+                    newData[0] = {date: date};
+                }
                 return {data: newData};
             });
         } catch (err) {
@@ -92,6 +114,7 @@ class DayControls extends Component {
             fields.forPeriod = this.props.periodId;
 
             await createAmountLog(fields);
+            await this.getChartData();
 
             this.setState(state => {
                 let newData = [...state.data];
@@ -135,7 +158,8 @@ class DayControls extends Component {
                                 key={elem[0].date}
                                 dayData={elem}
                                 addButtonHandler={() => {this.setState({addFormShow: true})}}
-                                deleteClicked={(id, date) => this.deleteClicked(id, date)}/>
+                                deleteClicked={(id, date) => this.deleteClicked(id, date)}
+                                refreshChartData={() => this.getChartData()}/>
                 ))}
             </div>
             <div
@@ -143,6 +167,11 @@ class DayControls extends Component {
                 style={loadingCSS}>
                     <span style={loadingTextCSS}>Loading...</span>
             </div>
+            {this.state.chartData && <BarChart 
+                periodId={this.props.periodId} 
+                data={this.state.chartData}
+                amountLeft={this.state.amountLeft}
+                amountUsed={this.state.amountUsed}/>}
         </div>
     }
 }

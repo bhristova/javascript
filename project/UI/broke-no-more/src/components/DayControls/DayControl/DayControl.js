@@ -40,9 +40,10 @@ class DayControl extends Component {
     editClicked = async (id, date, fields) => {
         try {
             await updateAmountLog(fields, id);
+            this.props.refreshChartData();
 
             this.setState(state => {
-                const newData = [...state.data];
+                const newData = [...this.props.dayData];
                 const elementIndex = newData.findIndex(elem => elem.id === id);
                 const newElement = newData[elementIndex];
 
@@ -65,17 +66,19 @@ class DayControl extends Component {
         return (
             <div className={classes.DayControl}>
                 <p className={classes.Date}>{this.getProperDate(date)}</p>
-                {logsCount ? this.props.dayData.map(elem => (<AmountControl
-                    key={elem.id || elem.date}
-                    id={elem.id}
-                    icon={elem.icon}
-                    category={elem.category}
-                    subject={elem.subject}
-                    amount={elem.amount}
-                    isToday={isToday}
-                    deleteClicked={() => this.props.deleteClicked(elem.id, date)}
-                    editClicked={(fields) => this.editClicked(elem.id, date, fields)}
-                ></AmountControl>)) : null}
+                {logsCount ? this.props.dayData
+                    .filter(elem => elem.subject)
+                    .map(elem => (<AmountControl
+                        key={elem.id || elem.date}
+                        id={elem.id}
+                        icon={elem.icon}
+                        category={elem.category}
+                        subject={elem.subject}
+                        amount={elem.amount}
+                        isToday={isToday}
+                        deleteClicked={() => this.props.deleteClicked(elem.id, date)}
+                        editClicked={(fields) => this.editClicked(elem.id, date, fields)}
+                    ></AmountControl>)) : null}
                 {isToday ? <Button buttonHandler={this.props.addButtonHandler} label='Add' /> : null}
             </div>
         )
