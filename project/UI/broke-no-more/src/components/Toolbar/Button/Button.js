@@ -1,13 +1,14 @@
 import React from 'react';
 
 import classes from './Button.css';
+import {Link} from 'react-router-dom';
 
 const button = (props) => (
-    <button
-        onClick={props.buttonHandler}
+    <Link
+        to={props.link}
         className={classes.Button}>
         {props.label.toUpperCase()}
-    </button>
+    </Link>
 );
 
 export default button;

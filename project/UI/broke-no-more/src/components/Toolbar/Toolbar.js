@@ -10,7 +10,7 @@ const toolbar = (props) => {
         <Icon className={classes.Logo} type="30844110-46c4-45ce-90f8-504fddd10615" />
         <div className={classes.Buttons}>
             {props.buttons.map(button => (
-                <Button key={button.id} label={button.label} />
+                <Button key={button.id} label={button.label} link={button.link} />
             ))}
         </div>
     </div>;

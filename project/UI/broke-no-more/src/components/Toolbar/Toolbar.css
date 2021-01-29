@@ -12,8 +12,10 @@
 .Logo {
     height: 100%;
 }
-
+/* 
 .Buttons {
     right: 0;
     top: 0;
-}
+    display: flex;
+    align-self: center;
+} */

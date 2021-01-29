@@ -17,6 +17,7 @@ class AddForm extends Component {
 
     async componentDidMount() {
         try {
+            this._isMounted = true;
             const result = await getCategories();
             const categories = result.reduce((acc, category) => {return {...acc, [category.id]: category.Name}}, {})
             this.setState({categories: categories, fields: {...this.state.fields, category: result[0].id}});
@@ -25,6 +26,10 @@ class AddForm extends Component {
             console.error(err);
             debugger
         }
+    }
+
+    componentWillUnmount() {
+        this._isMounted = false;
     }
 
     addToState = (fieldName, value) => {

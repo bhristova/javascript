@@ -22,12 +22,17 @@ class NewPeriodForm extends Component {
     }
 
     async componentDidMount() {
+        this._isMounted = true;
         const categories = await this.getCategories();
         const startDate = '2021-01-14';
         const endDate = '2021-01-14';
         this.setState({categoryFields: categories, startDate: startDate, endDate: endDate});
     }
 
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+    
     componentDidUpdate() {
         console.log(`component did update! budget is: ${this.state.budget}`)
     }

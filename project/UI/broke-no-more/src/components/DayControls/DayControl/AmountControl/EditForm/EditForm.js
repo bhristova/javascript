@@ -16,6 +16,7 @@ class EditForm extends Component {
 
     async componentDidMount() {
         try {
+            this._isMounted = true;
             const result = await getCategories();
             const categories = result.reduce((acc, category) => {return {...acc, [category.id]: category.Name}}, {})
             this.setState({categories: categories});
@@ -25,6 +26,10 @@ class EditForm extends Component {
         }
     }
 
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+    
     addToState = (fieldName, value) => {
         const newState = Object.assign({}, this.state.fields);
         newState[fieldName] = value;

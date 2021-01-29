@@ -47,6 +47,7 @@ class DayControls extends Component {
     }
 
     async componentDidMount() {
+        this._isMounted = true;
         const date = new Date();
         date.setDate(date.getDate() + 1);
         await this.getData(date);
@@ -63,6 +64,11 @@ class DayControls extends Component {
             options
         );
         this.observer.observe(this.loadingRef);
+    }
+
+    componentWillUnmount() {
+        this.observer.disconnect();
+        this._isMounted = false;
     }
 
     handleObserver = (entities, observer) => {
