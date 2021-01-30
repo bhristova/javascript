@@ -1,0 +1,8 @@
+.Link {
+    text-decoration: none;
+    color: #0b5563;
+}
+
+.Link:hover {
+    color: #2f7b8a;
+  }

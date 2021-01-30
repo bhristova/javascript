@@ -12,7 +12,6 @@ import NewPeriodForm from '../NewPeriodForm/NewPeriodForm';
 class DayControls extends Component {
     state = {
         data: [],
-        loading: false,
         page: 0,
         prevY: 0,
         addFormShow: false,
@@ -25,9 +24,15 @@ class DayControls extends Component {
     //     return nextState != this.state;
     // }
 
-    getData = async (lastDate) => {
+    getData = async (endDate) => {
+        const endDateParam = endDate || this.props.endDate;
+        const startDateParam = this.props.startDate;
+        if(new Date(endDateParam) < new Date(startDateParam)) {
+            return;
+        }
+
         this.setState({loading: true});
-        const newData = await getAmountLogs(this.props.periodId, lastDate);
+        const newData = await getAmountLogs(this.props.periodId, endDateParam, startDateParam);
         this.setState((state) => {
             return {data: [...state.data, ...newData], loading: true};
         });
@@ -50,7 +55,7 @@ class DayControls extends Component {
         this._isMounted = true;
         const date = new Date();
         date.setDate(date.getDate() + 1);
-        await this.getData(date);
+        await this.getData();
         await this.getChartData();
 
         const options = {
@@ -60,10 +65,11 @@ class DayControls extends Component {
         };
         
         this.observer = new IntersectionObserver(
-            this.handleObserver.bind(this),
+            await this.handleObserver.bind(this),
             options
         );
         this.observer.observe(this.loadingRef);
+        this.setState({loading: false});
     }
 
     componentWillUnmount() {
@@ -71,15 +77,15 @@ class DayControls extends Component {
         this._isMounted = false;
     }
 
-    handleObserver = (entities, observer) => {
+    handleObserver = async (entities, observer) => {
         const y = entities[0].boundingClientRect.y;
         if (this.state.prevY > y) {
           const lastLog = this.state.data[this.state.data.length - 1];
-          const lastDate = lastLog[0].date;
-          this.getData(lastDate);
-          this.setState({ page: lastDate });
+          const endDate = lastLog[0].date;
+          await this.getData(endDate);
+          this.setState({ page: endDate });
         }
-        this.setState({ prevY: y });
+        this.setState({ prevY: y, loading: false });
     }
     
     deleteClicked = async (id, date) => {

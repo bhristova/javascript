@@ -1,10 +1,10 @@
 const apiUrl = 'http://localhost:3001/api'; //TODO: get from config
 const entityName = 'amountLog';
 
-const getAmountLogs = (periodId, lastDate) => {
-    const lastDateString = lastDate ? `/lastDate=${lastDate}&periodId=${periodId}` : '';
+const getAmountLogs = (periodId, endDate, startDate) => {
+    const queryParams = `/periodId=${periodId}&endDate=${endDate}&startDate=${startDate}`;
     return new Promise((resolve, reject) => {
-        fetch(`${apiUrl}/${entityName}${lastDateString}`, {
+        fetch(`${apiUrl}/${entityName}${queryParams}`, {
             method: 'GET',
             mode: 'cors',
             headers: {

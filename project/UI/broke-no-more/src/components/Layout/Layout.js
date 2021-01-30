@@ -8,7 +8,7 @@ import Archive from '../../containers/Archive';
 
 class Layout extends Component {
     render() {
-        const buttons = [{id: 'toolbar-button-main-page', label: 'Main page', link:'/mainPage'},{id: 'toolbar-button-archive', label: 'Archive', link:'/archive'},{id: 'toolbar-button-logout', label: 'Logout', link:'/logout'}]
+        const buttons = [{id: 'toolbar-button-archive', label: 'Archive', link:'/archive'},{id: 'toolbar-button-logout', label: 'Logout', link:'/logout'}]
         return (
             <Aux>
                 <Toolbar buttons={buttons}/>

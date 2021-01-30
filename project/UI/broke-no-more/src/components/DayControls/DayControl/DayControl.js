@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import AmountControl from './AmountControl/AmountControl';
 import Button from '../../UI/Button/Button';
 import { updateAmountLog} from '../../../api/AmountLog';
+import UniversalContainer from '../../UI/UniversalContainer/UniversalContainer';
 
 import classes from './DayControl.css';
 
@@ -29,7 +30,7 @@ class DayControl extends Component {
             && currentDate.getFullYear() === parsedDate.getFullYear();
     }
     
-    getProperDate = (date) => {
+    prettifyDate = (date) => {
         if (this.isToday(date)) {
             return 'Today';
         }
@@ -64,8 +65,7 @@ class DayControl extends Component {
         console.log("DayControl update");
         const isToday = this.isToday(date);
         return (
-            <div className={classes.DayControl}>
-                <p className={classes.Date}>{this.getProperDate(date)}</p>
+            <UniversalContainer heading={this.prettifyDate(date)}>
                 {logsCount ? this.props.dayData
                     .filter(elem => elem.subject)
                     .map(elem => (<AmountControl
@@ -80,7 +80,7 @@ class DayControl extends Component {
                         editClicked={(fields) => this.editClicked(elem.id, date, fields)}
                     ></AmountControl>)) : null}
                 {isToday ? <Button buttonHandler={this.props.addButtonHandler} label='Add' /> : null}
-            </div>
+            </UniversalContainer>
         )
     }
 };

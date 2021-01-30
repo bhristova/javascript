@@ -7,19 +7,27 @@ periodController = () => {
     const queryFactoryInstance = queryFactory(tableName);
 
     return {
-        getAll: (req, res) => {
+        getAll: async (req, res) => {
             try {
+                const params = new URLSearchParams(req.params[0]);
+                const lastPeriod = params.get('last');
+
                 const options = {
                     select: [{
                         what: '*'
                     }],
                     tableName: tableName,
-                    ordering: 'asc',
+                    ordering: 'desc',
                     orderBy: 'startDate'
                 };
 
+                if(lastPeriod) {
+                    options.top = 1;
+                    options.ordering = 'desc';
+                }
+
                 const query = queryFactoryInstance.queryGetAll(options);
-                const result = queriesInstance.executeQuery(query);
+                const result = await queriesInstance.executeQuery(query);
                 res.status(200).send(result);
             } catch (err) {
                 res.status(500).send(err);
@@ -28,7 +36,7 @@ periodController = () => {
         getById: async (req, res) => {
             try {
                 const query = queryFactoryInstance.queryGetById(req);
-                const result = queriesInstance.executeQuery(query);
+                const result = await queriesInstance.executeQuery(query);
                 res.status(200).send(result);
             } catch (err) {
                 res.status(500).send(err);
@@ -122,7 +130,11 @@ periodController = () => {
                     }
 
                     if (existingAmountMinus) {
-                        amount -= existingAmountMinus.actualSum;
+                        if(amount === 0) {
+                            amount = budget - existingAmountMinus.actualSum;
+                        } else {
+                            amount -= existingAmountMinus.actualSum;
+                        }
                     }
 
                     return ({
@@ -159,7 +171,7 @@ periodController = () => {
         update: async (req, res) => {
             try {
                 const query = queryFactoryInstance.queryUpdate(req);
-                const result = queriesInstance.executeQuery(query);
+                const result = await queriesInstance.executeQuery(query);
                 res.status(200).send(result);
             } catch (err) {
                 res.status(500).send(err);
@@ -168,7 +180,7 @@ periodController = () => {
         delete: async (req, res) => {
             try {
                 const query = queryFactoryInstance.queryDelete(req);
-                const result = queriesInstance.executeQuery(query);
+                const result = await queriesInstance.executeQuery(query);
                 res.status(200).send(result);
             } catch (err) {
                 res.status(500).send(err);

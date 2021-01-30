@@ -6,42 +6,64 @@ amountLogController = () => {
 	const queriesInstance = query();
 	const queryFactoryInstance = queryFactory(tableName);
 
-	const getAllDates = (startDate, data) => {
+	const getAllDates = (startDate, endDate, data) => {
+		let result = [];
+		let realStartDate = startDate;
+		let realEndDate = endDate;
+		
 		const dates = data.map(elem => elem.date);
-		let endDate = dates[0];
-		dates.forEach(date => {
-			if (date < endDate) {
-				endDate = date;
+		dates.map(date => {
+			if (date < realEndDate) {
+				realEndDate = date;
+			}
+			if (date > realStartDate) {
+				realStartDate = date;
 			}
 		});
 
-		let result = [];
-		let currentDate = new Date(startDate);
-		currentDate.setDate(currentDate.getDate() - 1);
+		realEndDate = new Date(realEndDate);
+		realStartDate = new Date(realStartDate);
+		realStartDate.setDate(realStartDate.getDate() - 1);
 
 		do {
-			result.push(new Date(currentDate));
-			currentDate.setDate(currentDate.getDate() - 1);
-		} while (endDate <= currentDate)
+			result.push(new Date(realStartDate));
+			realStartDate.setDate(realStartDate.getDate() - 1);
+		} while (realEndDate <= realStartDate)
 
 		return result;
 	}
 
 	const getParamsFromUrl = (urlParams) => {
-		let lastDate = new Date();
+		let endDate = new Date();
 		let periodId = '';
 
 		if (urlParams) {
-			lastDate = urlParams.get('lastDate');
+			endDate = urlParams.get('endDate');
+			startDate = urlParams.get('startDate');
 			periodId = urlParams.get('periodId');
-			if (lastDate) {
-				lastDate = lastDate.substring(0, lastDate.indexOf('GMT'));
-				lastDate = new Date(lastDate);
+			if (endDate) {
+				endDate = endDate.includes('GMT') ? endDate.substring(0, endDate.indexOf('GMT')) : endDate;
+				endDate = new Date(endDate);
+
+				if (endDate > new Date()) {
+					endDate = new Date();
+					endDate.setDate(endDate.getDate() + 1);
+				}
+
+				endDate = `${endDate.getFullYear()}-${endDate.getMonth() + 1}-${endDate.getDate()}`;
+			}
+
+			if(startDate) {
+				startDate = startDate.includes('GMT') ? startDate.substring(0, startDate.indexOf('GMT')) : startDate;
+				startDate = new Date(startDate);
+
+				startDate = `${startDate.getFullYear()}-${startDate.getMonth() + 1}-${startDate.getDate()}`;
 			}
 		}
 
 		return {
-			lastDate: `${lastDate.getFullYear()}-${lastDate.getMonth() + 1}-${lastDate.getDate()}`,
+			startDate: startDate,
+			endDate: endDate,
 			periodId: periodId
 		};
 	}
@@ -71,7 +93,7 @@ amountLogController = () => {
 			try {
 				/// get 'top' and 'ordering' options from config maybe? or let user choose these settings?
 				const params = new URLSearchParams(req.params[0]);
-				const { lastDate, periodId } = getParamsFromUrl(params);
+				const { startDate, endDate, periodId } = getParamsFromUrl(params);
 
 				const optionsFirst = {
 					select: [{
@@ -80,13 +102,13 @@ amountLogController = () => {
 					tableName: tableName,
 					filter: [
 						{
-							column: 'date',
-							op: '<',
-							value: `date('${lastDate}')`
-						}, {
 							column: 'forPeriod',
 							op: '=',
 							value: `'${periodId}'`
+						}, {
+							column: 'date',
+							op: '>',
+							value: `date('${startDate}')`
 						}
 					],
 					top: 15,
@@ -113,16 +135,20 @@ amountLogController = () => {
 									alias: 'dt'
 								}],
 								tableName: tableName,
+								filter: [
+									{
+										column: 'forPeriod',
+										op: '=',
+										value: `'${periodId}'`
+									}, {
+										column: 'date',
+										op: '>',
+										value: `date(${startDate})`
+									}
+								],
 								top: 15,
 								orderBy: 'date',
 								ordering: 'desc',
-								filter: [
-									{
-										column: 'date',
-										op: '<',
-										value: `date(${lastDate})`
-									}
-								],
 							},
 							alias: 'dates'
 						}
@@ -131,12 +157,26 @@ amountLogController = () => {
 					ordering: 'desc'
 				};
 
+				if(endDate) {
+					optionsFirst.filter.push({
+						column: 'date',
+						op: '<',
+						value: `date('${endDate}')`
+					});
+
+					optionsSecond.filter[0].value.from.filter.push({
+							column: 'date',
+							op: '<',
+							value: `date(${endDate})`
+						});
+				}
+
 				const union = { union: [optionsFirst, optionsSecond] };
 
 				const query = queryFactoryInstance.queryGetAll(union);
 				const result = await queriesInstance.executeQuery(query);
 
-				const dates = getAllDates(lastDate, result);
+				const dates = getAllDates(endDate, startDate, result);
 				const dateResults = distributeResults(dates, result);
 
 				res.status(200).send(dateResults);

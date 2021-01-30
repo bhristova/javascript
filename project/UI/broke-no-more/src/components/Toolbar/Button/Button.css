@@ -8,10 +8,10 @@
     text-shadow: 2px 2px 0px #2f7b8a;
     display: inline-block;
     text-align: center;
-    padding-top: 15%;
-    padding-bottom: 15%;
+    padding-top: 22%;
 }
 
 .Button:hover {
-    background-color: #2f7b8a;
+    color: #2f7b8a;
+    text-shadow: 2px 2px 0px #fddd0c;
 }
