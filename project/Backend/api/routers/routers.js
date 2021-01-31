@@ -16,17 +16,17 @@ const setRoutes = (router, name, controller) => {
 		router.route(`/${name}/statistics/:id`)
 			.get(controller.getPeriodStatistics);
 	}
-
 	router.route(`/${name}/*`)
-		.get(controller.getAll)
-		.post(controller.create);
-
+	.get(controller.getAll)
+	.post(controller.create);
+	
 	router.route(`/${name}/:id`)
 		.get(controller.getById)
 		.put(controller.update)
 		.delete(controller.delete);
+		
 };
-
+			
 module.exports.setRouting = (app) => {
 	const rootPath = '/api';
 

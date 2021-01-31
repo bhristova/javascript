@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import Layout from './components/Layout/Layout';
+import Layout from './containers/Layout/Layout';
 import MainPage from './containers/MainPage';
 import {BrowserRouter} from 'react-router-dom';
 

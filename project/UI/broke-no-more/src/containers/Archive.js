@@ -1,35 +1,18 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
-import Aux from '../hoc/Auxiliary';
 import UniversalContainer from '../components/UI/UniversalContainer/UniversalContainer';
-import {getPeriods} from '../api/Period';
 import {Link} from 'react-router-dom';
 import classes from './Archive.css';
+import NewPeriodForm from '../components/NewPeriodForm/NewPeriodForm';
+import * as actionCreators from '../store/actions';
+
 
 class Archive extends Component {
 
-    state = {
-        data: []
-    }
-
-    prettifyDate = (date) => {
-        return new Intl.DateTimeFormat('en', {year: 'numeric', month: 'long', day: '2-digit'}).format(new Date(date));
-    }
-
     getData = async() => {
         try {
-            const result = await getPeriods();
-
-            const data = result.map(elem => ({
-                id: elem.id,
-                budget: elem.budget,
-                startDate: elem.startDate,
-                endDate: elem.endDate,
-                dateHeading: `${this.prettifyDate(elem.startDate)} - ${this.prettifyDate(elem.endDate)}`
-            }));
-
-            this.setState({data: data});
-
+            this.props.onGetAllPeriods();
         } catch (err) {
             console.error(err);
         }
@@ -38,19 +21,47 @@ class Archive extends Component {
     async componentDidMount() {
         await this.getData();
     }
+    
+    onAddNewPeriod = async () => {
+        await this.getData();
+        this.props.onShowNewPeriodForm(false)
+    }
 
     render() {
         return (
             <div>
-                {this.state.data.map(elem => (
+                {this.props.allPeriods.map(elem => (
                     <UniversalContainer
                                 key={elem.id}
-                                heading={<Link className={classes.Link} to={{pathname: '/mainPage', search: `periodId=${elem.id}&endDate=${elem.endDate}&startDate=${elem.startDate}`}}>{elem.dateHeading}</Link>}
+                                heading={
+                                    elem.link ? <Link className={classes.Link} to={{pathname: '/mainPage', search: `periodId=${elem.id}&endDate=${elem.endDate}&startDate=${elem.startDate}`}}>{elem.dateHeading}</Link>    
+                                              : <div className={classes.Link}  onClick={() => this.props.onShowNewPeriodForm(true)}>{elem.dateHeading}</div>
+                                }
                                 />
+                    
                 ))}
+                <NewPeriodForm
+                    cancelClicked={() => this.props.onShowNewPeriodForm(false)}
+                    addClicked={() => this.onAddNewPeriod()}
+                    newPeriodFormShow={this.props.showNewPeriodForm}
+                />
             </div>
         );
     }
 }
 
-export default Archive;
+const mapDispatchToProps = dispatch => {
+    return {
+        onGetAllPeriods: () => dispatch(actionCreators.getAllPeriods()),
+        onAddNewPeriod: () => dispatch(actionCreators.getAllPeriods()),
+        onShowNewPeriodForm: (addForm) => dispatch(actionCreators.showNewPeriodForm(addForm)),
+    }
+}
+const mapStateToProps = state => {
+    return {
+        allPeriods: state.allPeriods,
+        showNewPeriodForm: state.uiState.showNewPeriodForm
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Archive);

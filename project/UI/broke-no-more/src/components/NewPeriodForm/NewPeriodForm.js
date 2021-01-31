@@ -94,6 +94,7 @@ class NewPeriodForm extends Component {
                 this.setState({categoryFields: []});
                 this.setState({categoryFields: categories});
             }
+            this.props.addClicked();
         } catch (err) {
             console.error(err);
         }

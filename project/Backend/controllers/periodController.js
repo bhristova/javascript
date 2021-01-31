@@ -6,6 +6,17 @@ periodController = () => {
     const queriesInstance = query();
     const queryFactoryInstance = queryFactory(tableName);
 
+    const prettifyDate = date => new Intl.DateTimeFormat('en', {year: 'numeric', month: 'long', day: '2-digit'}).format(new Date(date));
+
+    const isToday = date => {
+        const parsedDate = new Date(date);
+        const currentDate = new Date();
+
+        return currentDate.getDate() === parsedDate.getDate()
+            && currentDate.getMonth() === parsedDate.getMonth()
+            && currentDate.getFullYear() === parsedDate.getFullYear();
+    }
+
     return {
         getAll: async (req, res) => {
             try {
@@ -27,7 +38,17 @@ periodController = () => {
                 }
 
                 const query = queryFactoryInstance.queryGetAll(options);
-                const result = await queriesInstance.executeQuery(query);
+                let result = await queriesInstance.executeQuery(query);
+                result = result.map(elem => {return {
+                    ...elem,
+                    dateHeading: `${prettifyDate(elem.startDate)} - ${prettifyDate(elem.endDate)}`,
+                    link: true
+                }});
+
+                // if(isToday(result[0].endDate)) {
+                    result.unshift({id: 'id-new-period-forn', dateHeading: 'Add new period', });
+                // }
+
                 res.status(200).send(result);
             } catch (err) {
                 res.status(500).send(err);
@@ -35,9 +56,13 @@ periodController = () => {
         },
         getById: async (req, res) => {
             try {
-                const query = queryFactoryInstance.queryGetById(req);
+                const query = queryFactoryInstance.queryGetById(req, {});
                 const result = await queriesInstance.executeQuery(query);
-                res.status(200).send(result);
+                if(result) {
+                    res.status(200).send(result[0]);
+                } else {
+                    res.status(404).send();
+                }
             } catch (err) {
                 res.status(500).send(err);
             };

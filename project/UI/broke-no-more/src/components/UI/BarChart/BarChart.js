@@ -1,22 +1,12 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
+import React from 'react';
 
-import Aux from '../../../hoc/Auxiliary';
-import Dropdown from '../Dropdown/Dropdown';
-import HoverButton from '../HoverButton/HoverButton';
 import Bar from './Bar/Bar';
 
 import classes from './BarChart.css';
 
-class BarChart extends Component {
+const barChart = (props) => {
 
-    state = {
-        data: []
-    };
-
-    getData = () => this.props.data;
-
-    getColorsExpected = () => [
+    const getColorsExpected = () => [
         {expected: '#ED9907', expectedHover: '#F29E08'},
         {expected: '#F29E08', expectedHover: '#F8A312'},
         {expected: '#F8A312', expectedHover: '#F8AB25'},
@@ -29,7 +19,7 @@ class BarChart extends Component {
         {expected: '#FBD99D', expectedHover: '#FCE0B1'}
     ];
 
-    getColorsActual = () => [
+    const getColorsActual = () => [
         {actual: '#369674', actualHover: '#3BA580'},
         {actual: '#3BA580', actualHover: '#41B48C'},
         {actual: '#41B48C', actualHover: '#4BBE96'},
@@ -42,17 +32,15 @@ class BarChart extends Component {
         {actual: '#A5DFCA', actualHover: '#B4E4D3'}
     ];
 
-    render() {
-        return <div className={classes.BarChart}>
-                    {this.props.data && this.props.data.map((sector, index) => <Bar sector={sector} index={index} key={index} colorsExpected={this.getColorsExpected()[index]} colorsActual={this.getColorsActual()[index]}></Bar>)}
-                    <div className={[classes.AmountLabel, classes.Minus].join(' ')}>
-                        used: {this.props.amountLeft.toFixed(2)}
-                    </div>
-                    <div className={[classes.AmountLabel, classes.Plus].join(' ')}>
-                        left: {this.props.amountUsed.toFixed(2)}
-                    </div>
-                </div>;
-    }
+    return <div className={classes.BarChart}>
+                {props.data && props.data.map((sector, index) => <Bar sector={sector} index={index} key={index} colorsExpected={getColorsExpected()[index]} colorsActual={getColorsActual()[index]}></Bar>)}
+                <div className={[classes.AmountLabel, classes.Minus].join(' ')}>
+                    used: {props.amountLeft.toFixed(2)}
+                </div>
+                <div className={[classes.AmountLabel, classes.Plus].join(' ')}>
+                    left: {props.amountUsed.toFixed(2)}
+                </div>
+            </div>;
 }
 
-export default BarChart;
+export default barChart;

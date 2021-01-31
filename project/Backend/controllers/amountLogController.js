@@ -187,7 +187,7 @@ amountLogController = () => {
 
 		getById: async (req, res) => {
 			try {
-				const query = queryFactoryInstance.queryGetById(req);
+				const query = queryFactoryInstance.queryGetById(req, {});
 				const result = await queriesInstance.executeQuery(query);
 				res.status(200).send(result);
 			} catch (err) {

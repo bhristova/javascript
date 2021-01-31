@@ -42,7 +42,7 @@ const updateAmountLog = (body, id) => {
     });   
 };
 
-const createAmountLog = (body) => {
+const createNewAmountLog = (body) => {
     return new Promise((resolve, reject) => {
         fetch(`${apiUrl}/${entityName}`, {
             method: 'POST',
@@ -56,4 +56,4 @@ const createAmountLog = (body) => {
     });  
 };
 
-export {getAmountLogs, deleteAmountLog, updateAmountLog, createAmountLog};
+export {getAmountLogs, deleteAmountLog, updateAmountLog, createNewAmountLog};
