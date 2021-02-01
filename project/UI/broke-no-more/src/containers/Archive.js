@@ -12,7 +12,7 @@ class Archive extends Component {
 
     getData = async() => {
         try {
-            this.props.onGetAllPeriods();
+            await this.props.onGetAllPeriods();
         } catch (err) {
             console.error(err);
         }

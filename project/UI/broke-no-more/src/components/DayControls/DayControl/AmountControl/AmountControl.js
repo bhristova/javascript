@@ -15,25 +15,14 @@ class AmountControl extends Component {
         deleteFormShow: false,
     }
 
-    componentDidUpdate = (previousValue, prevState) => {
-        if(this.props !== previousValue) {
-            console.log('Changed!')
-        }
-        console.log('Amount summary DID update')
-    } 
-
-    // shouldComponentUpdate = (nextProps, nextState) => {
-    //     return this.props != nextProps || this.state != nextState;
-    //     // if(this.state.editFormShow !== nextState.editFormShow) {
-    //     //     console.log('changed!');
-    //     // }
-    //     // return this.state !== nextState;
-    //     // return this.props.editFormShow != nextProps.editFormShow || this.props.deleteFormShow != nextProps.deleteFormShow;
-    // }
+    shouldComponentUpdate = (nextProps, nextState) => {
+        return this.props.id !== nextProps.id || this.props.icon !== nextProps.icon || this.props.category !== nextProps.category || this.props.subject !== nextProps.subject || this.props.amount !== nextProps.amount || 
+        this.state.hovered !== nextState.hovered || this.state.clicked !== nextState.clicked || this.state.editFormShow !== nextState.editFormShow || this.state.deleteFormShow !== nextState.deleteFormShow;
+    }
 
     setHoverState = () => {
         const prevState = this.state.hovered;
-        this.setState({ hovered: true });
+        this.setState({ hovered: !prevState });
     }
 
     hoverButtonHandler = () => {

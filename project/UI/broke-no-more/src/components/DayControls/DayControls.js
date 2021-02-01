@@ -15,11 +15,9 @@ class DayControls extends Component {
         addFormShow: false
     }
 
-    getChartData = () => this.props.getChartData(this.props.periodId);
-
     async componentDidMount() {
         this._isMounted = true;
-        this.getChartData(this.props.periodId);
+        await this.props.getChartData(this.props.periodId);
 
         const options = {
             root: null,
@@ -38,31 +36,53 @@ class DayControls extends Component {
     }
 
     handleObserver = async (entities, observer) => {
-        const y = entities[0].boundingClientRect.y;
-        if (this.state.prevY > y) {
-            const lastLog = this.props.periodData[this.props.periodData.length - 1];
-            const endDate = lastLog[0].date;
-            if(!areDatesEqual(endDate, this.props.startDate)) {
-                this.props.getPeriodAmountLogs(this.props.periodId, endDate, this.props.startDate);
+        try {
+            const y = entities[0].boundingClientRect.y;
+            if (this.state.prevY > y) {
+                const lastLog = this.props.periodData[this.props.periodData.length - 1];
+                const endDate = lastLog[0].date;
+                if(!areDatesEqual(endDate, this.props.startDate)) {
+                    await this.props.getPeriodAmountLogs(this.props.periodId, endDate, this.props.startDate);
+                }
+                this.setState({ page: endDate });
             }
-            this.setState({ page: endDate });
+            this.setState({ prevY: y, loading: false });
+        } catch (err) {
+            console.error(err);
         }
-        this.setState({ prevY: y, loading: false });
     }
     
-    deleteClicked = (id) => {
-        this.props.removeAmountLog(id);
-        this.getChartData(this.props.periodId);
+    deleteClicked = async (id) => {
+        try {
+            await this.props.removeAmountLog(id);
+            await this.props.getChartData(this.props.periodId);
+        } catch (err) {
+            console.error(err);
+        }
     }
 
-    addButtonClicked = (fields) => {
-        fields.id = uuidv4();
-        const date = new Date();
-        fields.date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-        fields.forPeriod = this.props.periodId;
+    addButtonClicked = async (fields) => {
+        try {
+            fields.id = uuidv4();
+            const date = new Date();
+            fields.date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+            fields.forPeriod = this.props.periodId;
 
-        this.props.createAmountLog(fields);
-        this.getChartData(this.props.periodId);
+            await this.props.createAmountLog(fields);
+            await this.props.getChartData(this.props.periodId);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    
+    editClicked = async (id, date, fields) => {
+        try {
+            await this.props.editAmountLog(fields, date, id)
+            await this.props.getChartData(this.props.periodId)
+        } catch (err) {
+            console.error(err);
+        }
     }
 
     render () {
@@ -86,7 +106,8 @@ class DayControls extends Component {
                                 dayData={elem}
                                 addButtonHandler={() => {this.setState({addFormShow: true})}}
                                 deleteClicked={(id, date) => this.deleteClicked(id, date)}
-                                refreshChartData={() => this.getChartData()}/>
+                                editClicked={(id, date, fields) => this.editClicked(id, date, fields)}
+                                refreshChartData={async () => await this.props.getChartData(this.props.periodId)}/>
                 ))}
             </div>
             <div
@@ -94,11 +115,11 @@ class DayControls extends Component {
                 style={loadingCSS}>
                     <span style={loadingTextCSS}>Loading...</span>
             </div>
-            {this.props.chartData && <BarChart 
+            <BarChart 
                 periodId={this.props.periodId} 
                 data={this.props.chartData}
                 amountLeft={this.props.amountLeft}
-                amountUsed={this.props.amountUsed}/>}
+                amountUsed={this.props.amountUsed}/>
         </div>
     }
 }
@@ -108,9 +129,8 @@ const mapDispatchToProps = dispatch => {
         getPeriodAmountLogs: (periodId, endDate, startDate) => dispatch(actionCreators.getPeriodAmountLogs(periodId, endDate, startDate)),
         createAmountLog: (fields) => dispatch(actionCreators.createAmountLog(fields)),
         removeAmountLog: (id) => dispatch(actionCreators.removeAmountLog(id)),
+        editAmountLog: (fields, date, periodId) => dispatch(actionCreators.editAmountLog(fields, date, periodId)),
         getChartData: (periodId) => dispatch(actionCreators.getChartData(periodId)),
-        
-        
     }
 }
 

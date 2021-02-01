@@ -1,27 +1,14 @@
-import React, { Component } from 'react';
+import React from 'react';
 
 import AmountControl from './AmountControl/AmountControl';
 import Button from '../../UI/Button/Button';
-import { updateAmountLog} from '../../../api/AmountLog';
 import UniversalContainer from '../../UI/UniversalContainer/UniversalContainer';
 
 import classes from './DayControl.css';
 
-class DayControl extends Component {
+const dayControl = (props) => {
     
-    state = {
-        data: []
-    }
-
-    componentDidMount() {
-        this.setState({data: this.props.dayData});
-    }
-
-    shouldComponentUpdate(nextProps, nextState) {
-        return this.state.data !== nextState.data || nextProps.dayData !== this.props.dayData;
-    }
-
-    isToday = (date) => {
+    const isToday = (date) => {
         const parsedDate = new Date(date);
         const currentDate = new Date();
 
@@ -30,59 +17,33 @@ class DayControl extends Component {
             && currentDate.getFullYear() === parsedDate.getFullYear();
     }
     
-    prettifyDate = (date) => {
-        if (this.isToday(date)) {
+    const prettifyDate = (date) => {
+        if (isToday(date)) {
             return 'Today';
         }
 
         return new Intl.DateTimeFormat('en', {year: 'numeric', month: 'long', day: '2-digit'}).format(new Date(date));
     }
     
-    editClicked = async (id, date, fields) => {
-        try {
-            await updateAmountLog(fields, id);
-            this.props.refreshChartData();
 
-            this.setState(state => {
-                const newData = [...this.props.dayData];
-                const elementIndex = newData.findIndex(elem => elem.id === id);
-                const newElement = newData[elementIndex];
-
-                Object.keys(fields).forEach(key => newElement[key] = fields[key]);
-
-                newData[elementIndex] = newElement;
-
-                return {data:newData};
-              });
-        } catch (err) {
-            console.error(err);
-        }
-    }
-
-    render() {
-        const date = this.props.dayData[0].date;
-        const logsCount = this.props.dayData.filter(elem => elem.icon).length;
-        console.log("DayControl update");
-        const isToday = this.isToday(date);
-        return (
-            <UniversalContainer heading={this.prettifyDate(date)}>
-                {logsCount ? this.props.dayData
-                    .filter(elem => elem.subject)
-                    .map(elem => (<AmountControl
-                        key={elem.id || elem.date}
-                        id={elem.id}
-                        icon={elem.icon}
-                        category={elem.category}
-                        subject={elem.subject}
-                        amount={elem.amount}
-                        isToday={isToday}
-                        deleteClicked={() => this.props.deleteClicked(elem.id, date)}
-                        editClicked={(fields) => this.editClicked(elem.id, date, fields)}
-                    ></AmountControl>)) : null}
-                {isToday ? <Button buttonHandler={this.props.addButtonHandler} label='Add' /> : null}
-            </UniversalContainer>
-        )
-    }
+    const date = props.dayData[0].date;
+    const logsCount = props.dayData.filter(elem => elem.icon).length;
+    return <UniversalContainer heading={prettifyDate(date)}>
+            {logsCount ? props.dayData
+                .filter(elem => elem.subject)
+                .map(elem => (<AmountControl
+                    key={elem.id || elem.date}
+                    id={elem.id}
+                    icon={elem.icon}
+                    category={elem.category}
+                    subject={elem.subject}
+                    amount={elem.amount}
+                    isToday={isToday}
+                    deleteClicked={() => props.deleteClicked(elem.id, date)}
+                    editClicked={(fields) => props.editClicked(elem.id, date, fields)}
+                ></AmountControl>)) : null}
+            {isToday(date) ? <Button buttonHandler={props.addButtonHandler} label='Add' /> : null}
+        </UniversalContainer>
 };
 
-export default DayControl;
+export default dayControl;

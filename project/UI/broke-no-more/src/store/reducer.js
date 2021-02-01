@@ -21,16 +21,23 @@ const initialState = {
 };
 
 const reducer = (state = initialState, action) => {
+    let newData = [];
     switch (action.type) {
         case actionTypes.AUTH: 
             return {
                 ...state,
+                allPeriods: [...state.allPeriods.map(elem => ({...elem}))],
+                periodData: [...state.periodData.map(elem => [...elem])],
+                chartData: [...state.chartData.map(elem => ({...elem}))],
+                uiState: {...state.uiState},
                 isAuthenticated: action.isAuthenticated,
                 authToken: action.authToken
             }
         case actionTypes.GET_ALL_PERIODS:
             return {
                 ...state,
+                chartData: [...state.chartData.map(elem => ({...elem}))],
+                uiState: {...state.uiState},
                 allPeriods: action.allPeriods,
                 periodData: [],
                 periodId: ''
@@ -38,29 +45,34 @@ const reducer = (state = initialState, action) => {
         case actionTypes.ADD_PERIOD:
             return {
                 ...state,
-                allPeriods: [
-                    ...state.allPeriods,
-                    action.newPeriod
-                ]
+                periodData: [...state.periodData.map(elem => [...elem])],
+                chartData: [...state.chartData.map(elem => ({...elem}))],
+                uiState: {...state.uiState},
+                allPeriods: [...state.allPeriods.map(elem => ({...elem})), action.newPeriod]
             }
         case actionTypes.REMOVE_PERIOD:
+            const newPeriods = [...state.allPeriods.map(elem => ({...elem}))];
             return {
                 ...state,
-                allPeriods: [
-                    ...state.allPeriods.filter(period => period.id !== action.periodId)
-                ]
+                periodData: [...state.periodData.map(elem => [...elem])],
+                chartData: [...state.chartData.map(elem => ({...elem}))],
+                uiState: {...state.uiState},
+                allPeriods: newPeriods.filter(period => period.id !== action.periodId)
             }
         case actionTypes.GET_AMOUNT_LOG:
             return {
                 ...state,
+                allPeriods: [...state.allPeriods.map(elem => ({...elem}))],
+                chartData: [...state.chartData.map(elem => ({...elem}))],
+                uiState: {...state.uiState},
                 periodId: action.periodId,
-                periodData: [...state.periodData, ...action.periodData],
+                periodData: [...state.periodData.map(elem => [...elem]), ...action.periodData],
                 startDate: action.startDate,
                 endDate: action.endDate
             }
         case actionTypes.ADD_AMOUNT_LOG:
-            let newData = [...state.periodData];
-            let dataIndex = newData.findIndex(elem => areDatesEqual(elem[0].date, action.fields.date));
+            newData = [...state.periodData.map(elem => [...elem])];
+            const dataIndex = newData.findIndex(elem => areDatesEqual(elem[0].date, action.fields.date));
             if(dataIndex < 0) {
                 const newLogData = [action.fields];
                 newData = [...newData, newLogData];
@@ -69,6 +81,29 @@ const reducer = (state = initialState, action) => {
             }
             return {
                 ...state,
+                allPeriods: [...state.allPeriods.map(elem => ({...elem}))],
+                chartData: [...state.chartData.map(elem => ({...elem}))],
+                uiState: {...state.uiState},
+                periodData: newData
+            }
+        case actionTypes.EDIT_AMOUNT_LOG:
+            newData = [...state.periodData.map(elem => [...elem])];
+            const elementIndex = newData.findIndex(elem => areDatesEqual(elem[0].date, action.date));
+            const newElement = newData[elementIndex];
+
+            const editElementIndex = newElement.findIndex(elem => elem.id === action.id);
+            const editElement = newElement[editElementIndex];
+
+            Object.keys(action.fields).forEach(key => editElement[key] = action.fields[key]);
+
+            newElement[editElementIndex] = editElement;
+            newData[elementIndex] = newElement;
+
+            return {
+                ...state,
+                allPeriods: [...state.allPeriods.map(elem => ({...elem}))],
+                chartData: [...state.chartData.map(elem => ({...elem}))],
+                uiState: {...state.uiState},
                 periodData: newData
             }
         case actionTypes.REMOVE_AMOUNT_LOG:
@@ -80,12 +115,18 @@ const reducer = (state = initialState, action) => {
             });
             return {
                 ...state,
+                allPeriods: [...state.allPeriods.map(elem => ({...elem}))],
+                chartData: [...state.chartData.map(elem => ({...elem}))],
+                uiState: {...state.uiState},
                 periodData: periodData
             }
         
         case actionTypes.SHOW_NEW_PERIOD_FORM:
             return {
                 ...state,
+                allPeriods: [...state.allPeriods.map(elem => ({...elem}))],
+                periodData: [...state.periodData.map(elem => [...elem])],
+                chartData: [...state.chartData.map(elem => ({...elem}))],
                 uiState: {
                     ...state.uiState,
                     showNewPeriodForm: action.showForm
@@ -94,6 +135,9 @@ const reducer = (state = initialState, action) => {
         case actionTypes.SHOW_NEW_AMOUNT_LOG_FORM:
             return {
                 ...state,
+                allPeriods: [...state.allPeriods.map(elem => ({...elem}))],
+                periodData: [...state.periodData.map(elem => [...elem])],
+                chartData: [...state.chartData.map(elem => ({...elem}))],
                 uiState: {
                     ...state.uiState,
                     showNewAmountLogForm: action.showForm
@@ -102,6 +146,9 @@ const reducer = (state = initialState, action) => {
         case actionTypes.SHOW_EDIT_AMOUNT_LOG_FORM:
             return {
                 ...state,
+                allPeriods: [...state.allPeriods.map(elem => ({...elem}))],
+                periodData: [...state.periodData.map(elem => [...elem])],
+                chartData: [...state.chartData.map(elem => ({...elem}))],
                 uiState: {
                     ...state.uiState,
                     showEditAmountLogForm: action.showForm
@@ -110,6 +157,9 @@ const reducer = (state = initialState, action) => {
         case actionTypes.SHOW_DELETE_AMOUNT_LOG_FORM:
             return {
                 ...state,
+                allPeriods: [...state.allPeriods.map(elem => ({...elem}))],
+                periodData: [...state.periodData.map(elem => [...elem])],
+                chartData: [...state.chartData.map(elem => ({...elem}))],
                 uiState: {
                     ...state.uiState,
                     showDeleteAmountLogForm: action.showForm
@@ -120,6 +170,9 @@ const reducer = (state = initialState, action) => {
             const amountLeft = action.chartData.reduce((acc, cur) => acc + cur.expectedAmount, 0) - amountUsed;
             return {
                 ...state,
+                allPeriods: [...state.allPeriods.map(elem => ({...elem}))],
+                periodData: [...state.periodData.map(elem => [...elem])],
+                uiState: {...state.uiState},
                 chartData: action.chartData,
                 amountUsed: amountUsed,
                 amountLeft: amountLeft

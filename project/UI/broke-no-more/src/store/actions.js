@@ -82,6 +82,25 @@ export const createAmountLog = (fields) => {
     }
 }
 
+export const editAmountLog = (fields, date, id) => {
+    return async dispatch => {
+        const onSuccess = (success) => {
+            dispatch({ type: EDIT_AMOUNT_LOG, fields: fields, id: id, date: date});
+        }  
+
+        const onError = (error) => {
+            dispatch({ type: ERROR_GENERATED, error });
+        }
+        
+        try {
+            const result = await updateAmountLog(fields, id);
+            return onSuccess(result);
+        } catch (error) {
+            return onError(error);
+        }
+    }
+}
+
 export const removeAmountLog = (id) => {
     return async dispatch => {
         const onSuccess = (success) => {

@@ -9,13 +9,13 @@ import * as actionCreators from '../store/actions';
 
 class MainPage extends Component {
 
-    componentDidMount() {
+    async componentDidMount() {
         if(this.props.location.search) {
             const queryParams = new URLSearchParams(this.props.location.search);
             const periodId = queryParams.get('periodId');
             const startDate = queryParams.get('startDate');
             const endDate = queryParams.get('endDate');
-            this.props.getPeriodAmountLogs(periodId, endDate, startDate);
+            await this.props.getPeriodAmountLogs(periodId, endDate, startDate);
             return;
         }
     }
