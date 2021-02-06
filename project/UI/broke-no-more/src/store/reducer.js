@@ -23,16 +23,8 @@ const initialState = {
 const reducer = (state = initialState, action) => {
     let newData = [];
     switch (action.type) {
-        case actionTypes.AUTH: 
-            return {
-                ...state,
-                allPeriods: [...state.allPeriods.map(elem => ({...elem}))],
-                periodData: [...state.periodData.map(elem => [...elem])],
-                chartData: [...state.chartData.map(elem => ({...elem}))],
-                uiState: {...state.uiState},
-                isAuthenticated: action.isAuthenticated,
-                authToken: action.authToken
-            }
+        case actionTypes.LOGOUT: 
+            return initialState
         case actionTypes.GET_ALL_PERIODS:
             return {
                 ...state,

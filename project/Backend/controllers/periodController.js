@@ -29,7 +29,14 @@ periodController = () => {
                     }],
                     tableName: tableName,
                     ordering: 'desc',
-                    orderBy: 'startDate'
+                    orderBy: 'startDate',
+                    filter: [
+						{
+							column: 'userId',
+							op: '=',
+							value: `'${req.user.id}'`
+						}
+					]
                 };
 
                 if(lastPeriod) {
@@ -179,7 +186,7 @@ periodController = () => {
         },
         create: async (req, res) => {
             try {
-                const periodData = { id: req.body.id, budget: req.body.budget, startDate: req.body.startDate, endDate: req.body.endDate };
+                const periodData = { id: req.body.id, budget: req.body.budget, startDate: req.body.startDate, endDate: req.body.endDate, userId: req.user.id };
                 const query = queryFactoryInstance.queryCreate(periodData);
                 await queriesInstance.executeQuery(query);
 

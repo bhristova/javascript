@@ -7,7 +7,8 @@ const getPeriods = () => {
             method: 'GET',
             mode: 'cors',
             headers: {
-                'Access-Control-Allow-Origin' : '*'
+                'Access-Control-Allow-Origin' : '*',
+                'Authorization': `Bearer ${sessionStorage.getItem('token')}`, 
             }
         }).then(response => resolve(response.json()))
         .catch(err => reject(err));
@@ -21,7 +22,8 @@ const createPeriod = (body) => {
             body: JSON.stringify(body),
             headers: {
                 'Access-Control-Allow-Origin' : '*',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${sessionStorage.getItem('token')}`, 
             }
         }).then(response => resolve(response.json()))
         .catch(err => {console.error(err); reject(err)});
@@ -34,7 +36,8 @@ const deletePeriod = (id) => {
             method: 'DELETE',
             mode: 'cors',
             headers: {
-                'Access-Control-Allow-Origin' : '*'
+                'Access-Control-Allow-Origin' : '*',
+                'Authorization': `Bearer ${sessionStorage.getItem('token')}`, 
             }
         }).then(response => resolve(response.json()))
         .catch(err => reject(err));
@@ -47,7 +50,8 @@ const getPeriodStatistics = (id) => {
             method: 'GET',
             mode: 'cors',
             headers: {
-                'Access-Control-Allow-Origin' : '*'
+                'Access-Control-Allow-Origin' : '*',
+                'Authorization': `Bearer ${sessionStorage.getItem('token')}`, 
             }
         }).then(response => resolve(response.json()))
         .catch(err => reject(err));

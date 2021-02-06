@@ -15,7 +15,14 @@ categoryController = () => {
                     }],
                     tableName: tableName,
                     ordering: 'asc',
-                    orderBy: 'name'
+                    orderBy: 'name',
+                    filter: [
+						{
+							column: 'id1_period',
+							op: 'in',
+							value: `('${req.user.id}', '891d4021-a697-4d14-9772-d684fe239f6b')`
+						}
+					]
                 };
 
                 const query = queryFactoryInstance.queryGetAll(options);

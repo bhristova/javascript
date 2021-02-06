@@ -11,28 +11,18 @@ import Auth from '../Auth/Auth';
 class Layout extends Component {
     
     render() {
-        console.log('Layout props:', this.props)
         const buttons = [
             {id: 'toolbar-button-archive', label: 'Archive', link:'/archive'},
             {id: 'toolbar-button-logout', label: 'Logout', link:'/auth'},
         ]
 
-        let routes = <Aux>
-                    <Route path="/auth" exact component={Auth}/>
-        </Aux>
-
-        // if(this.props.isAuthenticated) {
-            routes = <Aux>
-                    <Route path="/mainPage" exact component={MainPage}/>
-                    <Route path="/archive" exact component={Archive}/>
-                    <Route path="/auth" exact component={Auth}/>
-            </Aux>
-        // }
         return (
             <Aux>
                 <Toolbar buttons={buttons}/>
                 <main >
-                    {routes}
+                <Route path="/mainPage" exact component={MainPage}/>
+                    <Route path="/archive" exact component={Archive}/>
+                    <Route path="/auth" exact component={Auth}/>
                 </main>
             </Aux>
         );

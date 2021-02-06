@@ -8,8 +8,9 @@
     display: grid;
     justify-items: center;
     transform: translateX(-50%);
-    right: -412%;
+    right: -384%;
     opacity: 1;
+    top: 56%;
 }
 
 .Button {

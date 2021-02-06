@@ -1,7 +1,8 @@
 import {getPeriods, getPeriodById, createPeriod, deletePeriod, getPeriodStatistics} from '../api/Period';
 import {getAmountLogs, deleteAmountLog, updateAmountLog, createNewAmountLog} from '../api/AmountLog';
+import {createUser, login} from '../api/User';
 
-export const AUTH = 'AUTH';
+export const LOGOUT = 'LOGOUT';
 export const GET_ALL_PERIODS = 'GET_ALL_PERIODS';
 
 export const ADD_PERIOD = 'ADD_PERIOD';
@@ -22,17 +23,18 @@ export const SHOW_NEW_AMOUNT_LOG_FORM = '';
 export const SHOW_EDIT_AMOUNT_LOG_FORM = '';
 export const SHOW_DELETE_AMOUNT_LOG_FORM = '';
 
+export const ADD_USER = 'ADD_USER';
+export const GET_USER = 'GET_USER';
+export const LOGIN_USER = 'LOGIN_USER';
 
 export const getAllPeriods = () => {
     return async dispatch => {
         const onSuccess = (success) => {
             dispatch({ type: GET_ALL_PERIODS, allPeriods: success });
-            // return success;
         }  
 
         const onError = (error) => {
             dispatch({ type: ERROR_GENERATED, error });
-            // return error;
         }
         
         try {
@@ -140,9 +142,62 @@ export const getChartData = (periodId) => {
     }
 }
 
+export const registerUser = (data) => {
+    return async dispatch => {
+        const onSuccess = (success) => {
+            dispatch({ type: ADD_USER, fields: data });
+        }  
+
+        const onError = (error) => {
+            dispatch({ type: ERROR_GENERATED, error });
+        }
+        
+        try {
+            const result = await createUser(data);
+            return onSuccess(result);
+        } catch (error) {
+            return onError(error);
+        }
+    }
+}
+
+export const loginUser = (data) => {
+    return async dispatch => {
+        const onSuccess = (success) => {
+            try {
+                sessionStorage.setItem('isSessionStorageEnabled', 'value');
+                sessionStorage.removeItem('isSessionStorageEnabled');
+
+                sessionStorage.setItem('token', success.token);
+                return success;
+            } catch (err) {
+                ///TODO: let user know session storage is disabled
+            }
+        }  
+
+        const onError = (error) => {
+            dispatch({ type: ERROR_GENERATED, error });
+            return error;
+        }
+        
+        try {
+            const result = await login(data);
+            return onSuccess(result);
+        } catch (error) {
+            return onError(error);
+        }
+    }
+}
+
 export const showNewPeriodForm = (showForm) => {
     return {
         type: SHOW_NEW_PERIOD_FORM,
         showForm: showForm
+    };
+};
+
+export const logout = () => {
+    return {
+        type: LOGOUT
     };
 };

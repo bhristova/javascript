@@ -4,6 +4,9 @@ const config = {
       user: 'root',
       password: '',
       database: 'brokeNoMore'
+    },
+    auth: {
+      accessTokenSecret: 'ToChange123'
     }
 }
 
