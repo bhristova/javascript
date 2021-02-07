@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 
 import Aux from '../hoc/Auxiliary';
 import DayControls from '../components/DayControls/DayControls';
-import {getPeriods} from '../api/Period';
 import * as actionCreators from '../store/actions';
 
 

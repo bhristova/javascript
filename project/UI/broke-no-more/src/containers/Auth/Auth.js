@@ -25,7 +25,7 @@ class Auth extends Component {
             }
 
             const result = await this.props.loginUser(this.state.data);
-            if(result.message == 'OK') {
+            if(result.message === 'OK') {
                 this.setState({showLoginRegisterForm: false});
             }
         } catch (err) {

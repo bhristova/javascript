@@ -3,9 +3,10 @@ import React, { Component } from 'react';
 import Form from '../UI/Form/Form';
 import Modal from '../UI/Modal/Modal';
 import { v4 as uuidv4 } from 'uuid';
+import { connect } from 'react-redux';
 
-import {createCategory, getCategories, deleteCategory} from '../../api/Category';
 import {createPeriod} from '../../api/Period';
+import * as actionCreators from '../../store/actions';
 
 class NewPeriodForm extends Component {
 
@@ -23,10 +24,19 @@ class NewPeriodForm extends Component {
 
     async componentDidMount() {
         this._isMounted = true;
-        const categories = await this.getCategories();
-        const startDate = '2021-01-14';
-        const endDate = '2021-01-14';
-        this.setState({categoryFields: categories, startDate: startDate, endDate: endDate});
+        ///TODO: fix these dates
+        await this.props.getAllCategories();
+        let startDate = '2021-01-14';
+        startDate = new Date(startDate);
+        startDate.setDate(startDate.getDate() + 1);
+        const startDateParsed = Intl.DateTimeFormat('ko', {year: 'numeric', month: 'numeric', day: '2-digit'}).format(new Date(startDate)).replaceAll('.', '-').replaceAll(' ', '');
+
+
+        const endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + 1);
+        const endDateParsed = Intl.DateTimeFormat('ko', {year: 'numeric', month: 'numeric', day: '2-digit'}).format(new Date(endDate)).replaceAll('.', '-').replaceAll(' ', '');
+
+        this.setState({ startDate: startDateParsed, endDate: endDateParsed});
     }
 
     componentWillUnmount() {
@@ -61,7 +71,7 @@ class NewPeriodForm extends Component {
             val = 0;
         }
 
-        const existingCategories = [...this.state.categoryFields];
+        const existingCategories = [...this.props.allCategories];
         const categoryIndex = existingCategories.findIndex(category => category.id === id);
         existingCategories[categoryIndex].Value = newValue;
 
@@ -71,26 +81,24 @@ class NewPeriodForm extends Component {
         this.setState({ budget: newBudget, oldInput: 0, currentSum: newCurrentSum, categoryFields: existingCategories });
     }
 
-    getCategories = async () => {
-        const result = await getCategories();
-        return result.map(category =>
-            ({id: category.id, type: 'input',deleteButton: {value: 'X', deleteHandler: () => this.deleteCategory(category.id)},  labelsClassesNames:'FieldLabel', inputClassesNames:'FieldInput', inputType: 'number', name: category.Name, enterInputHandler: (value) => this.handlerEnterInput(value), leaveInputHandler: (value) => this.handlerLeaveInput(value, category.id) })
-        )
+    getCategories = () => {
+        return this.props.allCategories.map(category => 
+            ({id: category.id, contenteditable: category.contenteditable, type: 'input', deleteButton: {value: 'X', deleteHandler: () => this.deleteCategory(category.id)},  labelsClassesNames:'FieldLabel', inputClassesNames:'FieldInput', inputType: 'number', name: category.Name, handlerLabelInput: (evt) => this.onNewCategoryRename(evt, category.id), enterInputHandler: (value) => this.handlerEnterInput(value), leaveInputHandler: (value) => this.handlerLeaveInput(value, category.id) })
+            )
     }
 
     addClicked = async () => {
         try {
-            const newCategories = this.state.categoryFields.filter(field => field.contenteditable).map(field => ({id: field.id, name: field.name}));
+            const newCategories = this.props.allCategories.filter(field => field.contenteditable);
             if (newCategories.length) {
-                await createCategory(newCategories);
+                await this.props.createCategory(newCategories);
             }
-            
-            const periodCategoriesDistribution = this.state.categoryFields.map(field => ({id: field.id, value: field.Value}));
+            const periodCategoriesDistribution = this.props.allCategories.map(field => ({id: field.id, value: field.Value}));
             const newPeriodData = {id: uuidv4(), budget: this.state.budget, startDate: this.state.startDate, endDate: this.state.endDate, categories: periodCategoriesDistribution};
 
             await createPeriod(newPeriodData);
             if (newCategories.length) {
-                const categories = await this.getCategories();
+                const categories = this.getCategories();
                 this.setState({categoryFields: []});
                 this.setState({categoryFields: categories});
             }
@@ -103,32 +111,24 @@ class NewPeriodForm extends Component {
     addNewCategory = () => {
         const id = uuidv4();
         const newCategory = { id: id, contenteditable: 'true', type: 'labelInput', labelsClassesNames:'InputFieldLabel', inputClassesNames:'FieldInput', inputType: 'number', handlerLabelInput: (evt) => this.onNewCategoryRename(evt, id), enterInputHandler: (value) => this.handlerEnterInput(value), leaveInputHandler: (value) => this.handlerLeaveInput(value, id) };
-        const existingCategories = [...this.state.categoryFields];
-        existingCategories.push(newCategory);
-        this.setState({categoryFields: existingCategories});
+        this.props.newCategoryInput(newCategory);
     }
 
     deleteCategory = async (id) => {
         try {
-            const result = await deleteCategory(id);
+            const result = await this.props.removeCategory(id);
 
             if(result.message) {
                 console.error(result.message);
                 return;
             }
-
-            const existingCategories = [...this.state.categoryFields].filter(category => category.id !== id);
-            this.setState({categoryFields: existingCategories});
         } catch (err) {
             console.error(err);
         }
     }
 
     onNewCategoryRename = (evt, id) => {
-        const existingCategories = [...this.state.categoryFields];
-        const categoryIndex = existingCategories.findIndex(category => category.id === id);
-        existingCategories[categoryIndex].name = evt.target.innerHTML;
-        this.setState({categoryFields: existingCategories});
+        this.props.editCategory({id: id, name: evt.target.innerHTML});
     }
 
     inputDate = (dateType, value) => {
@@ -142,7 +142,7 @@ class NewPeriodForm extends Component {
         { id: 'fieldNewPeriodFormLabel', name: 'Categories distribution:', type: 'text'},
         {
             id: 'fieldNewPeriodFormCategories', type: 'multifield', fields: [
-                ...this.state.categoryFields,
+                ...this.getCategories(),
                 { id: 'multifield-addCategoryButton', type: 'button', name: 'Add category', handler: () => this.addNewCategory() },
             ],
         },
@@ -151,7 +151,7 @@ class NewPeriodForm extends Component {
 
     getNewPeriodFormButtons = () => [
         { id: 'buttonCancel', handler: this.props.cancelClicked, label: 'Cancel' },
-        { id: 'buttonAdd', handler: this.addClicked, label: 'Save' } ///TODO: handler: this.props.addClicked
+        { id: 'buttonAdd', handler: this.addClicked, label: 'Save' }
     ];
 
     getValues = () => {return {
@@ -182,5 +182,20 @@ class NewPeriodForm extends Component {
     };
 }
 
+const mapDispatchToProps = dispatch => {
+    return {
+        getAllCategories: () => dispatch(actionCreators.getAllCategories()),
+        createCategory: (newCategories) => dispatch(actionCreators.createCategory(newCategories)),
+        newCategoryInput: (newCategory) => dispatch(actionCreators.newCategoryInput(newCategory)),
+        removeCategory: (id) => dispatch(actionCreators.removeCategory(id)),
+        editCategory: (updated) => dispatch(actionCreators.editCategory(updated))
+    }
+}
 
-export default NewPeriodForm;
+const mapStateToProps = state => {
+    return {
+        allCategories: state.allCategories
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(NewPeriodForm);

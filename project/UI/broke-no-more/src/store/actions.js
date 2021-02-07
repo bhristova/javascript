@@ -1,5 +1,6 @@
-import {getPeriods, getPeriodById, createPeriod, deletePeriod, getPeriodStatistics} from '../api/Period';
+import {getPeriods, createPeriod, deletePeriod, getPeriodStatistics} from '../api/Period';
 import {getAmountLogs, deleteAmountLog, updateAmountLog, createNewAmountLog} from '../api/AmountLog';
+import {getCategories, createNewCategory, deleteCategory} from '../api/Category';
 import {createUser, login} from '../api/User';
 
 export const LOGOUT = 'LOGOUT';
@@ -15,6 +16,11 @@ export const EDIT_AMOUNT_LOG = 'EDIT_AMOUNT_LOG';
 export const REMOVE_AMOUNT_LOG = 'REMOVE_AMOUNT_LOG';
 
 export const GET_CHART_DATA = 'GET_CHART_DATA';
+
+export const GET_ALL_CATEGORIES = 'GET_ALL_CATEGORIES';
+export const ADD_CATEGORY = 'ADD_CATEGORY';
+export const REMOVE_CATEGORY = 'REMOVE_CATEGORY';
+export const EDIT_CATEGORY = 'EDIT_CATEGORY';
 
 export const ERROR_GENERATED = 'ERROR_GENERATED';
 
@@ -138,6 +144,77 @@ export const getChartData = (periodId) => {
             return onSuccess(result);
         } catch (error) {
             return onError(error);
+        }
+    }
+}
+
+export const getAllCategories = () => {
+    return async dispatch => {
+        const onSuccess = (success) => {
+            dispatch({ type: GET_ALL_CATEGORIES, allCategories: success });
+        }  
+
+        const onError = (error) => {
+            dispatch({ type: ERROR_GENERATED, error });
+        }
+        
+        try {
+          const success = await getCategories();
+          return onSuccess(success);
+        } catch (error) {
+          return onError(error);
+        }
+    }
+}
+
+export const createCategory = (newCategories) => {
+    return async dispatch => {
+        const onSuccess = (success) => {
+            dispatch({ type: ADD_CATEGORY, newCategories: newCategories });
+        }  
+
+        const onError = (error) => {
+            dispatch({ type: ERROR_GENERATED, error });
+        }
+        
+        try {
+            const success = await createNewCategory(newCategories.map(cat => ({id: cat.id, name: cat.Name})));
+            return onSuccess(success);
+        } catch (error) {
+            return onError(error);
+        }
+    }
+}
+
+export const newCategoryInput = (newCategory) => {
+    return {
+        type: ADD_CATEGORY,
+        newCategories: newCategory
+    };
+}
+
+export const editCategory = (updated) => {
+    return {
+        type: EDIT_CATEGORY,
+        updated: updated
+    };
+}
+
+export const removeCategory = (id) => {
+    return async dispatch => {
+        const onSuccess = (success) => {
+            dispatch({ type: REMOVE_CATEGORY, id: id });
+        }  
+
+        const onError = (error) => {
+            dispatch({ type: ERROR_GENERATED, error });
+        }
+        
+        try {
+          const success = await deleteCategory(id);
+          return onSuccess(success);
+        } catch (error) {
+          return onError(error);
         }
     }
 }

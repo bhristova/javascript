@@ -15,7 +15,7 @@ const getCategories = () => {
     });    
 };
 
-const createCategory = (body) => {
+const createNewCategory = (body) => {
     return new Promise((resolve, reject) => {
         fetch(`${apiUrl}/${entityName}`, {
             method: 'POST',
@@ -44,4 +44,4 @@ const deleteCategory = (id) => {
     });   
 };
 
-export {getCategories, createCategory, deleteCategory};
+export {getCategories, createNewCategory, deleteCategory};

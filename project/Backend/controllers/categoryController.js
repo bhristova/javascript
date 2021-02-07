@@ -18,7 +18,7 @@ categoryController = () => {
                     orderBy: 'name',
                     filter: [
 						{
-							column: 'id1_period',
+							column: 'userId',
 							op: 'in',
 							value: `('${req.user.id}', '891d4021-a697-4d14-9772-d684fe239f6b')`
 						}
@@ -44,7 +44,7 @@ categoryController = () => {
         },
         create: async (req, res) => {
             try {
-                const query = queryFactoryInstance.queryCreate(req.body);
+                const query = queryFactoryInstance.queryCreate({...req.body[0], userId: req.user.id});
                 const result = await queriesInstance.executeQuery(query);
                 res.status(200).send(result);
             } catch (err) {

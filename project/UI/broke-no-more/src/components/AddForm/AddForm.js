@@ -18,7 +18,7 @@ class AddForm extends Component {
     async componentDidMount() {
         try {
             this._isMounted = true;
-            const result = await getCategories();
+            const result = await getCategories(); ///TODO: get only categories for current period
             const categories = result.reduce((acc, category) => {return {...acc, [category.id]: category.Name}}, {})
             this.setState({categories: categories, fields: {...this.state.fields, category: result[0].id}});
             return result;

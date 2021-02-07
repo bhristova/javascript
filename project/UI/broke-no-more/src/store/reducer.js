@@ -10,6 +10,7 @@ const initialState = {
     endDate: '',
     periodData: [],
     chartData: [],
+    allCategories: [],
     amountUsed: 0,
     amountLeft: 0,
     uiState: {
@@ -32,7 +33,8 @@ const reducer = (state = initialState, action) => {
                 uiState: {...state.uiState},
                 allPeriods: action.allPeriods,
                 periodData: [],
-                periodId: ''
+                periodId: '',
+                allCategories: [...state.allCategories.map(elem => ({...elem}))] 
             }
         case actionTypes.ADD_PERIOD:
             return {
@@ -40,7 +42,8 @@ const reducer = (state = initialState, action) => {
                 periodData: [...state.periodData.map(elem => [...elem])],
                 chartData: [...state.chartData.map(elem => ({...elem}))],
                 uiState: {...state.uiState},
-                allPeriods: [...state.allPeriods.map(elem => ({...elem})), action.newPeriod]
+                allPeriods: [...state.allPeriods.map(elem => ({...elem})), action.newPeriod],
+                allCategories: [...state.allCategories.map(elem => ({...elem}))] 
             }
         case actionTypes.REMOVE_PERIOD:
             const newPeriods = [...state.allPeriods.map(elem => ({...elem}))];
@@ -49,7 +52,8 @@ const reducer = (state = initialState, action) => {
                 periodData: [...state.periodData.map(elem => [...elem])],
                 chartData: [...state.chartData.map(elem => ({...elem}))],
                 uiState: {...state.uiState},
-                allPeriods: newPeriods.filter(period => period.id !== action.periodId)
+                allPeriods: newPeriods.filter(period => period.id !== action.periodId),
+                allCategories: [...state.allCategories.map(elem => ({...elem}))] 
             }
         case actionTypes.GET_AMOUNT_LOG:
             return {
@@ -60,7 +64,8 @@ const reducer = (state = initialState, action) => {
                 periodId: action.periodId,
                 periodData: [...state.periodData.map(elem => [...elem]), ...action.periodData],
                 startDate: action.startDate,
-                endDate: action.endDate
+                endDate: action.endDate,
+                allCategories: [...state.allCategories.map(elem => ({...elem}))] 
             }
         case actionTypes.ADD_AMOUNT_LOG:
             newData = [...state.periodData.map(elem => [...elem])];
@@ -76,7 +81,8 @@ const reducer = (state = initialState, action) => {
                 allPeriods: [...state.allPeriods.map(elem => ({...elem}))],
                 chartData: [...state.chartData.map(elem => ({...elem}))],
                 uiState: {...state.uiState},
-                periodData: newData
+                periodData: newData,
+                allCategories: [...state.allCategories.map(elem => ({...elem}))] 
             }
         case actionTypes.EDIT_AMOUNT_LOG:
             newData = [...state.periodData.map(elem => [...elem])];
@@ -96,7 +102,8 @@ const reducer = (state = initialState, action) => {
                 allPeriods: [...state.allPeriods.map(elem => ({...elem}))],
                 chartData: [...state.chartData.map(elem => ({...elem}))],
                 uiState: {...state.uiState},
-                periodData: newData
+                periodData: newData,
+                allCategories: [...state.allCategories.map(elem => ({...elem}))] 
             }
         case actionTypes.REMOVE_AMOUNT_LOG:
             const periodData = state.periodData.map(data => {
@@ -110,7 +117,56 @@ const reducer = (state = initialState, action) => {
                 allPeriods: [...state.allPeriods.map(elem => ({...elem}))],
                 chartData: [...state.chartData.map(elem => ({...elem}))],
                 uiState: {...state.uiState},
-                periodData: periodData
+                periodData: periodData,
+                allCategories: [...state.allCategories.map(elem => ({...elem}))] 
+            }
+        case actionTypes.GET_ALL_CATEGORIES:
+            return {
+                ...state,
+                chartData: [...state.chartData.map(elem => ({...elem}))],
+                uiState: {...state.uiState},
+                allPeriods: [...state.allPeriods.map(elem => ({...elem}))],
+                periodData: [],
+                periodId: '',
+                allCategories: action.allCategories
+            }
+        case actionTypes.ADD_CATEGORY:
+            const newCategories = Array.isArray(action.newCategories) ? action.newCategories : [action.newCategories];
+            newData = [...state.allCategories, ...newCategories];
+            return {
+                ...state,
+                allPeriods: [...state.allPeriods.map(elem => ({...elem}))],
+                chartData: [...state.chartData.map(elem => ({...elem}))],
+                uiState: {...state.uiState},
+                periodData: [...state.periodData.map(elem => ({...elem}))],
+                allCategories: newData
+            }
+        case actionTypes.REMOVE_CATEGORY:
+            newData = [...state.allCategories.filter(elem => elem.id !== action.id)];
+            return {
+                ...state,
+                allPeriods: [...state.allPeriods.map(elem => ({...elem}))],
+                chartData: [...state.chartData.map(elem => ({...elem}))],
+                uiState: {...state.uiState},
+                periodData: [...state.periodData.map(elem => ({...elem}))],
+                allCategories: newData
+            }
+        case actionTypes.EDIT_CATEGORY:
+            newData = [...state.allCategories.map(elem => ({...elem}))];
+            const categoryIndex = newData.findIndex(cat => cat.id === action.updated.id);
+            newData[categoryIndex] = {
+                ...newData[categoryIndex],
+                Name: action.updated.name,
+                contenteditable: true
+            };
+
+            return {
+                ...state,
+                allPeriods: [...state.allPeriods.map(elem => ({...elem}))],
+                chartData: [...state.chartData.map(elem => ({...elem}))],
+                uiState: {...state.uiState},
+                periodData: [...state.periodData.map(elem => ({...elem}))],
+                allCategories: newData
             }
         
         case actionTypes.SHOW_NEW_PERIOD_FORM:
@@ -122,7 +178,8 @@ const reducer = (state = initialState, action) => {
                 uiState: {
                     ...state.uiState,
                     showNewPeriodForm: action.showForm
-                }
+                },
+                allCategories: [...state.allCategories.map(elem => ({...elem}))] 
             }
         case actionTypes.SHOW_NEW_AMOUNT_LOG_FORM:
             return {
@@ -133,7 +190,8 @@ const reducer = (state = initialState, action) => {
                 uiState: {
                     ...state.uiState,
                     showNewAmountLogForm: action.showForm
-                }
+                },
+                allCategories: [...state.allCategories.map(elem => ({...elem}))] 
             }
         case actionTypes.SHOW_EDIT_AMOUNT_LOG_FORM:
             return {
@@ -144,7 +202,8 @@ const reducer = (state = initialState, action) => {
                 uiState: {
                     ...state.uiState,
                     showEditAmountLogForm: action.showForm
-                }
+                },
+                allCategories: [...state.allCategories.map(elem => ({...elem}))] 
             }
         case actionTypes.SHOW_DELETE_AMOUNT_LOG_FORM:
             return {
@@ -155,7 +214,8 @@ const reducer = (state = initialState, action) => {
                 uiState: {
                     ...state.uiState,
                     showDeleteAmountLogForm: action.showForm
-                }
+                },
+                allCategories: [...state.allCategories.map(elem => ({...elem}))] 
             }
         case actionTypes.GET_CHART_DATA:
             const amountUsed = action.chartData.reduce((acc, cur) => acc + cur.actualAmount, 0)
@@ -167,7 +227,8 @@ const reducer = (state = initialState, action) => {
                 uiState: {...state.uiState},
                 chartData: action.chartData,
                 amountUsed: amountUsed,
-                amountLeft: amountLeft
+                amountLeft: amountLeft,
+                allCategories: [...state.allCategories.map(elem => ({...elem}))] 
             }
         default:
             return state;
