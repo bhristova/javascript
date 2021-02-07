@@ -1,0 +1,15 @@
+phase 1:
+1. Fix (...) buttons CSS on Amount Control. - DONE
+2. Login form. - DONE
+3. Register form. - DONE
+4. Authentication - DONE
+5. User controller in backend + table in db - DONE
+6. Error handling
+7. Add option to transfer left money to new period or to savings (savings = a default category?)
+8. Validate forms before sending request
+
+phase 2:
+1. Transition between old/new period
+2. Bar chart - filter by category
+3. Add redux everywhere possible
+4. Add hooks in functional components
