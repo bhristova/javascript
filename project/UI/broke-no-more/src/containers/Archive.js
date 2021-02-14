@@ -10,6 +10,10 @@ import * as actionCreators from '../store/actions';
 
 class Archive extends Component {
 
+    state = {
+        showNewPeriodForm: false
+    }
+
     getData = async() => {
         try {
             await this.props.onGetAllPeriods();
@@ -24,7 +28,7 @@ class Archive extends Component {
     
     onAddNewPeriod = async () => {
         await this.getData();
-        this.props.onShowNewPeriodForm(false)
+        this.setState({showNewPeriodForm: false});
     }
 
     render() {
@@ -35,16 +39,16 @@ class Archive extends Component {
                                 key={elem.id}
                                 heading={
                                     elem.link ? <Link className={classes.Link} to={{pathname: '/mainPage', search: `periodId=${elem.id}&endDate=${elem.endDate}&startDate=${elem.startDate}`}}>{elem.dateHeading}</Link>    
-                                              : <div className={classes.Link}  onClick={() => this.props.onShowNewPeriodForm(true)}>{elem.dateHeading}</div>
+                                              : <div className={classes.Link}  onClick={() => this.setState({showNewPeriodForm: true})}>{elem.dateHeading}</div>
                                 }
                                 />
                     
                 ))}
-                <NewPeriodForm
-                    cancelClicked={() => this.props.onShowNewPeriodForm(false)}
+                {this.state.showNewPeriodForm && <NewPeriodForm
+                    cancelClicked={() => this.setState({showNewPeriodForm: false})}
                     addClicked={() => this.onAddNewPeriod()}
-                    newPeriodFormShow={this.props.showNewPeriodForm}
-                />
+                    newPeriodFormShow={this.state.showNewPeriodForm}
+                />}
             </div>
         );
     }
@@ -54,7 +58,6 @@ const mapDispatchToProps = dispatch => {
     return {
         onGetAllPeriods: () => dispatch(actionCreators.getAllPeriods()),
         onAddNewPeriod: () => dispatch(actionCreators.getAllPeriods()),
-        onShowNewPeriodForm: (addForm) => dispatch(actionCreators.showNewPeriodForm(addForm)),
     }
 }
 const mapStateToProps = state => {

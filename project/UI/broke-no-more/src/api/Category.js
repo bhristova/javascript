@@ -1,9 +1,9 @@
 const apiUrl = 'http://localhost:3001/api'; //TODO: get from config
 const entityName = 'category'
 
-const getCategories = () => {
+const getCategories = (periodId) => {
     return new Promise((resolve, reject) => {
-        fetch(`${apiUrl}/${entityName}`, {
+        fetch(`${apiUrl}/${entityName}?periodId=${periodId}`, {
             method: 'GET',
             mode: 'cors',
             headers: {

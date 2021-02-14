@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 import Form from '../UI/Form/Form';
 import Modal from '../UI/Modal/Modal';
@@ -18,7 +19,7 @@ class AddForm extends Component {
     async componentDidMount() {
         try {
             this._isMounted = true;
-            const result = await getCategories(); ///TODO: get only categories for current period
+            const result = await getCategories(this.props.periodId);
             const categories = result.reduce((acc, category) => {return {...acc, [category.id]: category.Name}}, {})
             this.setState({categories: categories, fields: {...this.state.fields, category: result[0].id}});
             return result;
@@ -63,4 +64,10 @@ class AddForm extends Component {
     };
 }
 
-export default AddForm;
+const mapStateToProps = state => {
+    return {
+        periodId: state.periodId,
+    }
+}
+
+export default connect(mapStateToProps, null)(AddForm);

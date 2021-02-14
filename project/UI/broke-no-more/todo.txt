@@ -5,8 +5,10 @@ phase 1:
 4. Authentication - DONE
 5. User controller in backend + table in db - DONE
 6. Error handling
-7. Add option to transfer left money to new period or to savings (savings = a default category?)
+7. Add option to transfer left money to new period or to savings (savings = a default category?) - DONE
 8. Validate forms before sending request
+9. Add 'Expected' hover baloon in barchart - DONE
+10. Order periods and amount logs by date of creation
 
 phase 2:
 1. Transition between old/new period

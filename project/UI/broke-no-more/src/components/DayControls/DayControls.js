@@ -6,7 +6,7 @@ import DayControl from './DayControl/DayControl'
 import AddForm from '../AddForm/AddForm';
 import BarChart from '../UI/BarChart/BarChart';
 import * as actionCreators from '../../store/actions';
-import {areDatesEqual} from '../../utils/Date';
+import {isDateEarlierOrEqual} from '../../utils/Date';
 
 class DayControls extends Component {
     state = {
@@ -41,7 +41,7 @@ class DayControls extends Component {
             if (this.state.prevY > y) {
                 const lastLog = this.props.periodData[this.props.periodData.length - 1];
                 const endDate = lastLog[0].date;
-                if(!areDatesEqual(endDate, this.props.startDate)) {
+                if(!isDateEarlierOrEqual(endDate, this.props.startDate)) {
                     await this.props.getPeriodAmountLogs(this.props.periodId, endDate, this.props.startDate);
                 }
                 this.setState({ page: endDate });
@@ -94,11 +94,11 @@ class DayControls extends Component {
         const loadingTextCSS = { display: this.state.loading ? "block" : "none" };
           
         return <div className="container">
-            <AddForm
+            {this.state.addFormShow && <AddForm
                 cancelClicked={() => {this.setState({addFormShow: false})}}
                 addClicked={(fields) => {this.addButtonClicked(fields); this.setState({addFormShow: false})}}
                 addFormShow={this.state.addFormShow}
-            />
+            />}
             <div style={{ minHeight: "800px" }}>
                 {this.props.periodData.map(elem => (
                     <DayControl

@@ -8,22 +8,48 @@ categoryController = () => {
 
     return {
         getAll: async (req, res) => {
+            const periodId = req.query ? req.query.periodId : '';
             try {
                 const options = {
                     select: [{
-                        what: '*'
+                        what: 'lc.*'
                     }],
-                    tableName: tableName,
+                    tableName: `${tableName} as lc`,
                     ordering: 'asc',
                     orderBy: 'name',
                     filter: [
 						{
-							column: 'userId',
+							column: 'lc.userId',
 							op: 'in',
 							value: `('${req.user.id}', '891d4021-a697-4d14-9772-d684fe239f6b')`
-						}
-					]
+						},
+                        
+					],
                 };
+
+                if (periodId) {
+                    options.filter.push({
+                        exists: true,
+                        existsCondition: {
+                            select: [{
+                                    what: '1'
+                                }],
+                            tableName: 'period_l_category plc',
+                            filter: [
+                                {
+                                    column: 'plc.id1_period',
+                                    op: '=',
+                                    value: `'${periodId}'`
+                                },
+                                {
+                                    column: 'plc.id2_l_category',
+                                    op: '=',
+                                    value: 'lc.id'
+                                }
+                            ]
+                        }
+                    });
+                }
 
                 const query = queryFactoryInstance.queryGetAll(options);
 

@@ -16,7 +16,12 @@ const barChart = (props) => {
         {expected: '#F9C262', expectedHover: '#FAC975'},
         {expected: '#FAC975', expectedHover: '#FBD189'},
         {expected: '#FBD189', expectedHover: '#FBD99D'},
-        {expected: '#FBD99D', expectedHover: '#FCE0B1'}
+        {expected: '#FBD99D', expectedHover: '#FCE0B1'},
+        {expected: '#FBD99D', expectedHover: '#FCE0B1'},
+        {expected: '#FBD99D', expectedHover: '#FCE0B1'},
+        {expected: '#FBD99D', expectedHover: '#FCE0B1'},
+        {expected: '#FBD99D', expectedHover: '#FCE0B1'},
+        {expected: '#FBD99D', expectedHover: '#FCE0B1'},
     ];
 
     const getColorsActual = () => [
@@ -29,7 +34,12 @@ const barChart = (props) => {
         {actual: '#78CEB0', actualHover: '#87D4B9'},
         {actual: '#87D4B9', actualHover: '#96D9C2'},
         {actual: '#96D9C2', actualHover: '#A5DFCA'},
-        {actual: '#A5DFCA', actualHover: '#B4E4D3'}
+        {actual: '#A5DFCA', actualHover: '#B4E4D3'},
+        {actual: '#A5DFCA', actualHover: '#B4E4D3'},
+        {actual: '#A5DFCA', actualHover: '#B4E4D3'},
+        {actual: '#A5DFCA', actualHover: '#B4E4D3'},
+        {actual: '#A5DFCA', actualHover: '#B4E4D3'},
+        {actual: '#A5DFCA', actualHover: '#B4E4D3'},
     ];
 
     return <div className={classes.BarChart}>

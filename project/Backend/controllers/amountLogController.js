@@ -56,6 +56,7 @@ amountLogController = () => {
 			if(startDate) {
 				startDate = startDate.includes('GMT') ? startDate.substring(0, startDate.indexOf('GMT')) : startDate;
 				startDate = new Date(startDate);
+				startDate.setDate(startDate.getDate() - 1);
 
 				startDate = `${startDate.getFullYear()}-${startDate.getMonth() + 1}-${startDate.getDate()}`;
 			}
@@ -107,7 +108,7 @@ amountLogController = () => {
 							value: `'${periodId}'`
 						}, {
 							column: 'date',
-							op: '>',
+							op: '>=',
 							value: `date('${startDate}')`
 						}
 					],
@@ -142,7 +143,7 @@ amountLogController = () => {
 										value: `'${periodId}'`
 									}, {
 										column: 'date',
-										op: '>',
+										op: '>=',
 										value: `date(${startDate})`
 									}
 								],
@@ -160,13 +161,13 @@ amountLogController = () => {
 				if(endDate) {
 					optionsFirst.filter.push({
 						column: 'date',
-						op: '<',
+						op: '<=',
 						value: `date('${endDate}')`
 					});
 
 					optionsSecond.filter[0].value.from.filter.push({
 							column: 'date',
-							op: '<',
+							op: '<=',
 							value: `date(${endDate})`
 						});
 				}

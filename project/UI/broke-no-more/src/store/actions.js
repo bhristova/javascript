@@ -148,7 +148,7 @@ export const getChartData = (periodId) => {
     }
 }
 
-export const getAllCategories = () => {
+export const getAllCategories = (periodId) => {
     return async dispatch => {
         const onSuccess = (success) => {
             dispatch({ type: GET_ALL_CATEGORIES, allCategories: success });
@@ -159,7 +159,7 @@ export const getAllCategories = () => {
         }
         
         try {
-          const success = await getCategories();
+          const success = await getCategories(periodId);
           return onSuccess(success);
         } catch (error) {
           return onError(error);

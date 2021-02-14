@@ -33,9 +33,12 @@ class Bar extends Component {
                         onMouseOut={() => this.onActualHover(this.props.colorsActual.actual)}  
                         style={{width: this.props.sector.actualAmountPercent * 5, backgroundColor: this.state.actualColor}} 
                         key={this.props.sector.categoryId}>
-                        <span className={classes.Tooltip}>Actual: {this.props.sector.actualAmount.toFixed(2)}</span>
                     </div>
-                            <span className={classes.Label}>{this.props.sector.categoryName}</span>
+                    <span className={classes.Tooltip}>
+                        Expected: {this.props.sector.expectedAmount.toFixed(2)}<br></br>
+                        Actual: {this.props.sector.actualAmount.toFixed(2)}
+                    </span>
+                    <span className={classes.Label}>{this.props.sector.categoryName}</span>
                 </div>
     }
 }

@@ -19,24 +19,23 @@ class NewPeriodForm extends Component {
         ],
         categoryFieldsNames: [],
         startDate: '',
-        endDate: ''
+        endDate: '',
+        startDateOriginal: '',
+        endDateOriginal: ''
     }
 
     async componentDidMount() {
         this._isMounted = true;
-        ///TODO: fix these dates
-        await this.props.getAllCategories();
-        let startDate = '2021-01-14';
-        startDate = new Date(startDate);
-        startDate.setDate(startDate.getDate() + 1);
-        const startDateParsed = Intl.DateTimeFormat('ko', {year: 'numeric', month: 'numeric', day: '2-digit'}).format(new Date(startDate)).replaceAll('.', '-').replaceAll(' ', '');
-
-
-        const endDate = new Date(startDate);
-        endDate.setDate(endDate.getDate() + 1);
-        const endDateParsed = Intl.DateTimeFormat('ko', {year: 'numeric', month: 'numeric', day: '2-digit'}).format(new Date(endDate)).replaceAll('.', '-').replaceAll(' ', '');
-
-        this.setState({ startDate: startDateParsed, endDate: endDateParsed});
+        await this.props.getAllCategories(this.props.periodId);
+        if(!this.allPeriods) {
+            await this.props.onGetAllPeriods();
+        }
+        const sortedDates = this.props.allPeriods
+            .map(period => period.endDate)
+            .filter(date => date)
+            .sort();
+        let startDate = sortedDates[sortedDates.length - 1].substring(0, 10);
+        this.setState({ startDateOriginal: startDate, startDate: startDate, endDate: startDate});
     }
 
     componentWillUnmount() {
@@ -93,7 +92,10 @@ class NewPeriodForm extends Component {
             if (newCategories.length) {
                 await this.props.createCategory(newCategories);
             }
-            const periodCategoriesDistribution = this.props.allCategories.map(field => ({id: field.id, value: field.Value}));
+            const periodCategoriesDistribution = this.props.allCategories.filter(field => field.Value).map(field => ({id: field.id, value: field.Value}));
+            if(this.state.budget > 0) {
+                periodCategoriesDistribution.push({id: 'a7c89f82-67bf-44ae-b182-77c9138b9a58', value: this.state.budget});
+            }
             const newPeriodData = {id: uuidv4(), budget: this.state.budget, startDate: this.state.startDate, endDate: this.state.endDate, categories: periodCategoriesDistribution};
 
             await createPeriod(newPeriodData);
@@ -137,7 +139,7 @@ class NewPeriodForm extends Component {
 
     getNewPeriodFormFields = () => [
         { id: 'fieldNewPeriodFormBudget', name: 'Budget', type: 'input', inputType: 'number', required: true, propertyName: 'bugetAmount', handlerInput: (value) => this.handlerBudgetInput(value) },
-        { id: 'fieldNewPeriodFormStartDate', name: 'Start date', type: 'input', inputType: 'date', required: true, propertyName: 'startDate', min: this.state.startDate, handlerInput: (value) => this.inputDate('startDate', value) },
+        { id: 'fieldNewPeriodFormStartDate', name: 'Start date', type: 'input', inputType: 'date', required: true, propertyName: 'startDate', min: this.state.startDateOriginal, handlerInput: (value) => this.inputDate('startDate', value) },
         { id: 'fieldNewPeriodFormEndDate', name: 'End date', type: 'input', inputType: 'date', required: true, propertyName: 'endDate', min: this.state.startDate, handlerInput: (value) => this.inputDate('endDate', value) },
         { id: 'fieldNewPeriodFormLabel', name: 'Categories distribution:', type: 'text'},
         {
@@ -184,17 +186,20 @@ class NewPeriodForm extends Component {
 
 const mapDispatchToProps = dispatch => {
     return {
-        getAllCategories: () => dispatch(actionCreators.getAllCategories()),
+        getAllCategories: (periodId) => dispatch(actionCreators.getAllCategories(periodId)),
         createCategory: (newCategories) => dispatch(actionCreators.createCategory(newCategories)),
         newCategoryInput: (newCategory) => dispatch(actionCreators.newCategoryInput(newCategory)),
         removeCategory: (id) => dispatch(actionCreators.removeCategory(id)),
-        editCategory: (updated) => dispatch(actionCreators.editCategory(updated))
+        editCategory: (updated) => dispatch(actionCreators.editCategory(updated)),
+        onGetAllPeriods: () => dispatch(actionCreators.getAllPeriods()),
     }
 }
 
 const mapStateToProps = state => {
     return {
-        allCategories: state.allCategories
+        allCategories: state.allCategories,
+        periodId: state.periodId,
+        allPeriods: state.allPeriods
     }
 }
 

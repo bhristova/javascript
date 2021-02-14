@@ -38,7 +38,7 @@ const dayControl = (props) => {
                     category={elem.category}
                     subject={elem.subject}
                     amount={elem.amount}
-                    isToday={isToday}
+                    isToday={isToday(date)}
                     deleteClicked={() => props.deleteClicked(elem.id, date)}
                     editClicked={(fields) => props.editClicked(elem.id, date, fields)}
                 ></AmountControl>)) : null}

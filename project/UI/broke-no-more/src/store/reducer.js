@@ -126,9 +126,9 @@ const reducer = (state = initialState, action) => {
                 chartData: [...state.chartData.map(elem => ({...elem}))],
                 uiState: {...state.uiState},
                 allPeriods: [...state.allPeriods.map(elem => ({...elem}))],
-                periodData: [],
+                periodData: [...state.periodData.map(elem => ({...elem}))],
                 periodId: '',
-                allCategories: action.allCategories
+                allCategories: [...action.allCategories.map(elem => ({...elem}))]
             }
         case actionTypes.ADD_CATEGORY:
             const newCategories = Array.isArray(action.newCategories) ? action.newCategories : [action.newCategories];
